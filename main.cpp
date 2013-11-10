@@ -20,23 +20,31 @@ int main(int argc, char *argv[])
 
         try
         {
-            MyConfigMap["debug"];
+            if(MyConfigMap["debug"].get_int())std::cerr<<"Running in Debug mode"<<std::endl;
         }
         catch(std::runtime_error &e)
         {
             std::cerr<<"Started"<<std::endl;
         }
 
-        for(ConfigMap::iterator i=MyConfigMap.begin(); i!=MyConfigMap.end(); i++)
+        if(MyConfigMap.ReloadConfig())
         {
-            std::cerr<<(i->first)<<" : "<<(i->second)<<std::endl;
+            std::cerr<<"Config Reloaded"<<std::endl<<std::endl;
+        }
+        {
+            boost::mutex::scoped_lock Lock(MyConfigMap.getLock());
+            for(ConfigMap::const_iterator i=MyConfigMap.begin(); i!=MyConfigMap.end(); i++)
+            {
+                std::cerr<<i->first<<" : "<<i->second<<std::endl;
+
+            }
         }
 
     }
     catch(std::exception &e)
     {
 
-        std::cerr<<e.what()<<std::endl;
+        std::cerr<<"Error, exiting: "<<e.what()<<std::endl;
     }
 
 
