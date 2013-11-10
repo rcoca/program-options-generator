@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
         {
             std::cerr<<"Started"<<std::endl;
         }
-        std::cerr<<"Map Size:"<<MyConfigMap.size()<<std::endl;
+
         for(ConfigMap::iterator i=MyConfigMap.begin(); i!=MyConfigMap.end(); i++)
         {
             std::cerr<<(i->first)<<" : "<<(i->second)<<std::endl;
