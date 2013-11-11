@@ -21,6 +21,7 @@ STypesDict={'ip_port'              : ('endpoint','required'),
             'host_port'            : ('endpoint','required'),
             'path_list'            : ('path_list','multitoken','required'),
             'ip_port_list'         : ('endpoint_list','multitoken','required'),
+            'floats'                : ('vector_double','multitoken','required'),
             'string'               : ('std::string','required'),
             'int'                  : ('int','required'),
             'float'                : ('double','required'),
@@ -35,6 +36,7 @@ def guessKeyType(text):
         ('([0-9]{1,}\.){3,}[0-9]{1,}[\-:/]\s*[0-9]+\s*,\s*','ip_port_list'),
         ('([0-9]{1,}\.){3,}[0-9]{1,}\s*[\-:/]\s*[0-9]+','ip_port'),
         ('^[A-z\-\.0-9]+[\-:/]\s*[0-9]+$','host_port'),
+        ('^\s*([0-9]+\.[0-9]+\s*,\s*)+[0-9]+\.[0-9]+','floats'),
         ('^\s*[0-9]+\.[0-9]+','float'),
         ('^/[A-z0-9/ \-\.,]+$','path_list'),
         ('^[Tt]rue|[Ff]alse','bool'),
@@ -71,140 +73,63 @@ def GenTypesAndValidators(typename="ValueType"):
                                                                '#include "endpoint.hpp"'])
     C.add_member('std::vector<endpoint>', 'endpoints')
     Classes.append(C)
+    C=ClassHolder('vector_double',classtype='struct',includes=['#include <string>','#include <vector>'])
+    C.add_member('std::vector<double>', 'values')
+    Classes.append(C)
+
     Functions=FuncCollectionHolder('ConfUtils',includes=includes+\
                                        ['#include "endpoint.hpp"',
                                         '#include "endpoint_list.hpp"',
-                                        '#include "path_list.hpp"'])
-    vbody  = [""]
-    vbody += ["typename std::vector<T>::const_iterator i=v.begin();"]
-    vbody += ['os<<"[ ";']
-    vbody += ['for(;i!=v.end();++i)']
-    vbody += ['    '+'os<<*i<<(i+1==v.end()?" ]":", ");']
-    vbody += ['return os;']
+                                        '#include "path_list.hpp"',
+                                        '#include "vector_double.hpp"'])
+
 
     Functions.add_function('std::ostream&', 'operator<<',template_def='template<typename T>',
                            margs=['std::ostream& os', 'const std::vector<T>& v'],
-                           body=("\n"+4*' ').join(vbody))
-    vbody  = [""]
-    vbody += ['os<<"["<<ep.address<<"]:["<<ep.port<<"]";']
-    vbody += ['return os;']
+                           body=FileBody('parts/ostream.vectorT.part')())
+    
+
+    Functions.add_function('std::ostream&', 'operator<<',
+                           margs=['std::ostream& os', 'const vector_double& v'],
+                           body=FileBody('parts/ostream.vector_double.part')())
+                           
+
     Functions.add_function('std::ostream &','operator<<',
                            margs=['std::ostream & os','const endpoint& ep'],
-                           body=("\n"+4*' ').join(vbody))
-    vbody  = [""]
-    vbody += ["os<<elist.endpoints;"]
-    vbody += ["return os;"]
+                           body=FileBody('parts/ostream.endpoint.part')())
+
     Functions.add_function('std::ostream &','operator<<',margs=['std::ostream& os','const endpoint_list& elist'],
-                           body=("\n"+4*' ').join(vbody))
-    vbody  = [""]
-    vbody += ['os<<plist.paths;']
-    vbody += ['return os;']
+                           body=FileBody('parts/ostream.endpoints.part')())
+
     Functions.add_function('std::ostream &','operator<<',margs=['std::ostream& os','const path_list& plist'],
-                           body=("\n"+4*' ').join(vbody))
-    vbody  = [""]
-    vbody += ['boost::program_options::validators::check_first_occurrence(value);']
-    vbody += ['const std::string& s = boost::program_options::validators::get_single_string(values);']
-    vbody += ['std::vector< std::string > tokens;']
-    vbody += ['boost::split( tokens, s, boost::is_any_of( "," ) );']
-    vbody += ['value=boost::any(tokens) ;']
+                           body=FileBody('parts/ostream.path_list.part')())
+
     Functions.add_function('void','validate',
                            margs=['boost::any& value', 'const std::vector<std::string> & values',
                                   'std::vector<std::string>* target_type', 'int'],
-                           body=("\n"+4*' ').join(vbody))
-    vbody  = [""]
-    vbody += ['boost::program_options::validators::check_first_occurrence(value);']
-    vbody += ['const std::string& s = boost::program_options::validators::get_single_string(values);']
-    vbody += ['std::vector< std::string > tokens;']
-    vbody += ['std::vector< double > numbers;']
-    vbody += ['boost::split( tokens, s, boost::is_any_of( "," ) );']
-    vbody += ["std::vector<std::string>::iterator i=tokens.begin();"]
-    vbody += ["for(;i!=tokens.end();i++)"]
-    vbody += ["{"]
-    vbody += ["    double number;"]    
-    vbody += ['    try']
-    vbody += ['    {']
-    vbody += ['        number=boost::lexical_cast<double,std::string>(*i);']
-    vbody += ['        numbers.push_back(number);']
-    vbody += ['    }']
-    vbody += ['    catch(boost::bad_lexical_cast &e)']
-    vbody += ['    {']
-    vbody += ['        throw boost::program_options::validation_error(boost::program_options::validation_error::invalid_option_value,"double",s);']
-    vbody += ['    }']
+                           body=FileBody('parts/validate.vector_string.part')())
 
-    vbody += ['}']
-
-    vbody += ['value=boost::any(numbers) ;']
     Functions.add_function('void','validate',
                            margs=['boost::any& value', 'const std::vector<std::string> & values',
-                                  'std::vector<double>* target_type', 'int'],
-                           body=("\n"+4*' ').join(vbody))
+                                  'vector_double* target_type', 'int'],
+                           body=FileBody('parts/validate.vector_double.part')())
 
-    vbody  = [""]
-    vbody += ['endpoint Endpoint;']
-    vbody += ['boost::program_options::validators::check_first_occurrence(value);']
-    vbody += ['const std::string& String = boost::program_options::validators::get_single_string(values);']
-    vbody += ['std::vector< std::string > tokens;']
-    vbody += ['boost::split( tokens, String, boost::is_any_of( "/:-" ) );']
-    vbody += ['if ( tokens.size()!=2 )']
-    vbody += ['throw boost::program_options::validation_error(boost::program_options::validation_error::invalid_option_value,"endpoint",String );']
-    vbody += ['Endpoint.address=tokens[0];']
-    vbody += ['try']
-    vbody += ['{']
-    vbody += ['    Endpoint.port=boost::lexical_cast<unsigned short,std::string>(tokens[1]);']
-    vbody += ['}']
-    vbody += ['catch(boost::bad_lexical_cast &e)']
-    vbody += ['{']
-    vbody += ['    throw boost::program_options::validation_error(boost::program_options::validation_error::invalid_option_value,"endpoint",String);']
-    vbody += ['}']
-    vbody += ['value=boost::any(Endpoint);']
+ 
     Functions.add_function('void','validate',margs=['boost::any& value',
                                                     'const std::vector<std::string>& values',
                                                     'endpoint* target_type', 'int'],
-                           body=("\n"+4*' ').join(vbody))
-    vbody  = [""]
-    vbody += ['path_list paths;']
-    vbody += ['boost::program_options::validators::check_first_occurrence(value);']
-    vbody += ['const std::string& str = boost::program_options::validators::get_single_string(values);']
-    vbody += ['std::vector< std::string > tokens;']
-    vbody += ['boost::split( paths.paths, str, boost::is_any_of( "," ) );']
-    vbody += ['value=boost::any(paths);']
-    
+                           body=FileBody('parts/validate.endpoint.part')())
+ 
     Functions.add_function('void','validate',margs=['boost::any& value', 
                                                     'const std::vector<std::string>& values', 
                                                     'path_list* target_type','int'],
-                           body=("\n"+4*' ').join(vbody))
+                           body=FileBody('parts/validate.path_list.part')())
 
-    vbody  = [""]
-    vbody += ["std::vector<std::string> list_elements;"]
-    vbody += ["endpoint_list end_points;"]
-    vbody += ["boost::program_options::validators::check_first_occurrence(value);"]
-    vbody += ["const std::string& str = boost::program_options::validators::get_single_string(values);"]
-    vbody += ['boost::split( list_elements , str, boost::is_any_of( "," ) );']
-    vbody += ["std::vector<std::string>::iterator i=list_elements.begin();"]
-    vbody += ["for(;i!=list_elements.end();i++)"]
-    vbody += ["{"]
-    vbody += ["    endpoint Endpoint;"]
-    vbody += ["    std::vector< std::string > tokens;"]
-    vbody += ['    boost::split( tokens, *i, boost::is_any_of( "/:-" ) );']
-    vbody += ["    if (tokens.size() !=2)"]
-    vbody += ['         throw boost::program_options::validation_error(boost::program_options::validation_error::invalid_option_value,  "endpoint",str );']
-    vbody += ['    Endpoint.address=tokens[0];']
-    vbody += ['    try']
-    vbody += ['    {']
-    vbody += ['          Endpoint.port=boost::lexical_cast<unsigned short,std::string>(tokens[1]);']
-    vbody += ['    }']
-    vbody += ['    catch(boost::bad_lexical_cast &e)']
-    vbody += ['    {']
-    vbody += ['        throw boost::program_options::validation_error(boost::program_options::validation_error::invalid_option_value,"endpoint",str);']
-    vbody += ['    }']
-    vbody += ['    end_points.endpoints.push_back(Endpoint);']
-    vbody += ['}']
-    vbody += ['value=boost::any(end_points);']
 
     Functions.add_function('void','validate',margs=['boost::any& value', 
                                                     'const std::vector<std::string>& values',
                                                     'endpoint_list* target_type', 'int'],
-                           body=("\n"+4*' ').join(vbody))
+                           body=FileBody('parts/validate.endpoint_list.part')())
     Classes+=GenInterfaceParser()
     typelist=TypeList()
     Classes.append(GenAccessClass(typename,typelist))
@@ -238,6 +163,7 @@ def GenVariantMapTypeDef(typename='ValueType'):
 def GenAccessClass(typename,typelist):
     Class=ClassHolder(typename, includes=['#include <string>','#include <iostream>',
                                           '#include <fstream>',
+                                          '#include <vector>',
                                           '#include <boost/variant.hpp>',
                                           '#include "ConfUtils.hpp"',
                                           '#include "endpoint.hpp"',
@@ -350,59 +276,24 @@ def GenConfigLookupMap(typename='ValueType'):
     Class.add_member('int','m_argc',access='private')
     Class.add_member('char **','m_argv',access='private')
     Class.add_member('boost::shared_ptr<OptionsParser>',' OptParser',access='private')
-    cbody  = [""]
-    cbody += ["OptParser.reset(Parser);"]
-    cbody += ["OptParser->Parse(xConfigFile,argc,argv,m_map);"]
 
     Class.add_method('','ConfigMap',access='private')    
     Class.add_method('','ConfigMap',margs=['OptionsParser *Parser',
                                            'std::string const &xConfigFile',
                                            'int argc','char *argv[]'],
-                     initializers=initializers,body=("\n"+4*' ').join(cbody))
-    rbody  = [""]
-    rbody += ["boost::mutex::scoped_lock lock(m_mutex);"]
-    rbody += ["try{"]
-    rbody += ["   boost::shared_ptr<%sMap> PtrVariablesMap(new %sMap());"%(typename,typename)]
-    rbody += ["   OptParser->Parse(FileName,m_argc,m_argv,PtrVariablesMap);"]
-    rbody += ["   m_map=PtrVariablesMap;"]
-    rbody += ["   return true;"]
-    rbody += ["}"]
-    rbody += ["catch(boost::program_options::validation_error &e)"]
-    rbody += ['{std::cerr<<"Parse Error["<<FileName<<"]:"<<e.what()<<std::endl;}']
-    rbody += ['catch(std::exception &e)']
-    rbody += ['{std::cerr<<e.what()<<std::endl;}']
-    rbody += ['catch(...)']
-    rbody += ['{std::cerr<<"Unknown Error["<<FileName<<"]"<<std::endl;}']
-    
-    Class.add_method('bool', 'ReloadConfig',margs=[],
-                     body=("\n"+4*' ').join(rbody))
+                     initializers=initializers,body=FileBody('parts/ConfigMap.Ctor.part')())
 
-    rbody  = [""]
-    rbody += ["boost::mutex::scoped_lock lock(m_mutex);"]
-    rbody += ["try{"]
-    rbody += ["   boost::shared_ptr<%sMap> PtrVariablesMap(new %sMap());"%(typename,typename)]
-    rbody += ["   OptParser->Parse(xConfigFile,m_argc,m_argv,PtrVariablesMap);"]
-    rbody += ["   m_map=PtrVariablesMap;"]
-    rbody += ["   FileName=xConfigFile;"]
-    rbody += ["   return true;"]
-    rbody += ["}"]
-    rbody += ["catch(boost::program_options::validation_error &e)"]
-    rbody += ['{std::cerr<<"Parse Error["<<xConfigFile<<"]:"<<e.what()<<std::endl;}']
-    rbody += ['catch(std::exception &e)']
-    rbody += ['{std::cerr<<e.what()<<std::endl;}']
-    rbody += ['catch(...)']
-    rbody += ['{std::cerr<<"Unknown Error["<<xConfigFile<<"]"<<std::endl;}']
+    Class.add_method('bool', 'ReloadConfig',margs=[],
+                     body=FileBody('parts/ConfigMap.Reload.0.part')(typename,typename))
+
     
     Class.add_method('bool', 'ReloadConfig',margs=['std::string const &xConfigFile'],
-                     body=("\n"+4*' ').join(rbody))
-    kbody  = [""]
-    kbody += ["boost::mutex::scoped_lock lock(m_mutex);"]
-    kbody += ["%sMap::const_iterator i=m_map->find(key);"%typename]
-    kbody += ["if(i!=m_map->end())return i->second;"]
-    kbody += ['throw std::runtime_error(std::string("key:")+key+" not found");']
+                     body=FileBody('parts/ConfigMap.Reload.0.part')(typename,typename))
 
-    Class.add_method(typename,'operator []',margs=['std::string const & key'],body=("\n"+4*' ').join(kbody))
-    Class.add_method(typename,'operator []',margs=['const char* key'],body='    return (*this)[std::string(key)];')
+    Class.add_method(typename,'operator []',margs=['std::string const & key'],
+                     body=FileBody('parts/ConfigMap.get.part')(typename))
+    Class.add_method(typename,'operator []',margs=['const char* key'],
+                     body='    return (*this)[std::string(key)];')
 
     Class.add_method('size_t','size',body='    boost::mutex::scoped_lock lock(m_mutex);\nreturn m_map->size();')
     Class.add_member('typedef','%sMap::iterator iterator'%typename)

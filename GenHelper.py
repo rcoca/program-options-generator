@@ -2,6 +2,15 @@
 import re
 from collections import OrderedDict
 import sys
+
+class FileBody:
+    def __init__(self,filename):
+        self.snippet=""
+        with open(filename,'r') as f:
+            self.snippet=f.read()
+    def __call__(self,*args):
+        return self.snippet%args
+
 class ClassHolder:
     """
     tries to make a place to keep a class content.
@@ -25,14 +34,9 @@ class ClassHolder:
     def add_member(self,mtype,mname,access='public'):
         self.datamembers[mname]={'type':mtype,'access':access,'name':mname}
     def add_method(self,mtype,mname,margs=[],access='public',modifier='',body=None,initializers=None):
-        if type(body)==type(sys.stdin):
-            Body=body.read()
-            body.close()
-        else:
-            Body=body
         k='%s.%s'%(mname,".".join(margs))
         self.methods[k]={'type':mtype,'name':mname,'modifier':modifier,
-                             'args':margs,'access':access,'body':Body,
+                             'args':margs,'access':access,'body':body,
                              'ilist':initializers}
     def add_templated_method(self,mtemplate_params,mtype,mname,margs=[],access='public',modifier='',body='{};'):
         k="%s.%s.%s"%(".".join(mtemplate_params),mname,".".join(margs))
@@ -110,8 +114,8 @@ class ClassHolder:
                     initializers=":"+", ".join(self.methods[method]['ilist'])
                 else:
                     initializers=''
-                #args=map(lambda x:re.sub('=.*$','',x),self.methods[method]['args'])
-                args=map(lambda x:re.sub('=.*[,\)]','',x),self.methods[method]['args'])
+                args=map(lambda x:re.sub('=.*$','',x),self.methods[method]['args'])
+                #args=map(lambda x:re.sub('=.*[,\)]','',x),self.methods[method]['args'])
                 if self.methods[method]['modifier']!='friend':
                     code += [("%s %s::%s(%s)%s"%(self.methods[method]['type'].strip(),
                                                  self.name.strip(),self.methods[method]['name'].strip(),
@@ -144,14 +148,10 @@ class FuncCollectionHolder:
         return "%s.cpp"%self.name
 
     def add_function(self,mtype,mname,margs=[],modifier='',body=None,template_def=''):
-        if type(body)==type(sys.stdin):
-            Body=body.read()
-            body.close()
-        else:
-            Body=body
+
         k='%s.%s'%(mname,".".join(margs))
         self.methods[k]={'type':mtype,'name':mname,'modifier':modifier,
-                             'args':margs,'body':Body,'template':template_def}
+                             'args':margs,'body':body,'template':template_def}
         
     def headerBody(self,inline=False):
         headerdefine=self.headerName().replace('.','_').upper()
