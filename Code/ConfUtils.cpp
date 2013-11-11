@@ -136,24 +136,24 @@ void validate (boost::any& value, const std::vector<std::string>& values, endpoi
 }
 void validate (boost::any& value, const std::vector<std::string>& values, url_string* target_type, int)
 {
-
     url_string url;
     const std::string& input = boost::program_options::validators::get_single_string(values);
 
-    
+
     boost::regex exrp( "^([A-z]+)\\://([A-z\\.\\-]+(\\:[0-9]+)*)[/]?(.*)$") ;
     boost::match_results<std::string::const_iterator> what;
-    if( regex_search( input, what, exrp ) ) {
+    if( regex_search( input, what, exrp ) )
+    {
         url.protocol=std::string( what[1].first, what[1].second );
         url.host=std::string( what[2].first, what[2].second );
-	url.path=std::string( what[what.size()-1].first, what[what.size()-1].second );
+        url.path=std::string( what[what.size()-1].first, what[what.size()-1].second );
     }
     else
     {
         throw boost::program_options::validation_error(
-         boost::program_options::validation_error::invalid_option_value,
-         "url_string",
-         input);
+            boost::program_options::validation_error::invalid_option_value,
+            "url_string",
+            input);
     }
     value=boost::any(url);
 
@@ -166,28 +166,29 @@ void validate (boost::any& value, const std::vector<std::string>& values, url_li
     boost::program_options::validators::check_first_occurrence(value);
     const std::string& s = boost::program_options::validators::get_single_string(values);
     boost::split( list_elements , s, boost::is_any_of( "," ) );
-    std::vector<std::string>::iterator i=list_elements.begin();   
+    std::vector<std::string>::iterator i=list_elements.begin();
     boost::regex exrp( "^([A-z]+)\\://([A-z\\.\\-]+(\\:[0-9]+)*)[/]?(.*)$") ;
-    for(;i!=list_elements.end();i++)
+    for(; i!=list_elements.end(); i++)
     {
         url_string url;
-	boost::match_results<std::string::const_iterator> what;
+        boost::match_results<std::string::const_iterator> what;
 
-    	if( regex_search( *i, what, exrp ) ) 
-	{
+        if( regex_search( *i, what, exrp ) )
+        {
             url.protocol=std::string( what[1].first, what[1].second );
             url.host=std::string( what[2].first, what[2].second );
-	    url.path=std::string( what[what.size()-1].first, what[what.size()-1].second );
-	    urls.list.push_back(url);
-    	}
-	else
-	{
-		throw boost::program_options::validation_error(
-         	boost::program_options::validation_error::invalid_option_value,
-         	"url_list",
-         	*i);
-	}
+            url.path=std::string( what[what.size()-1].first, what[what.size()-1].second );
+            urls.list.push_back(url);
+        }
+        else
+        {
+            throw boost::program_options::validation_error(
+                boost::program_options::validation_error::invalid_option_value,
+                "url_list",
+                *i);
+        }
     }
 
     value=boost::any(urls);
+
 }
