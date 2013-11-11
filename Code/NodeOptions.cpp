@@ -6,23 +6,25 @@ bool NodeOptions::Parse(std::string const& ConfigName,int argc,char *argv[],boos
 
         boost::program_options::options_description description("Node options");
         path_list  Main_DataDir;
-        int  GeneticParameters_Generations;
+        vector_double  GeneticParameters_Generations;
         double  GeneticParameters_InitialTemperature;
         int  GeneticParameters_PopulationSize;
         std::string  GeneticParameters_CrossoverOp;
         endpoint_list  Cluster_Nodes;
         endpoint  Cluster_MasterNode;
+        url_list  Cluster_certificates;
         ;
         description.add_options()
         ("help", "help message")
         ("debug","debug run")
         ("Main.DataDir",boost::program_options::value< path_list >(&Main_DataDir) ->multitoken()->required(),"Main DataDir: path_list")
-        ("GeneticParameters.Generations",boost::program_options::value< int >(&GeneticParameters_Generations) ->required(),"GeneticParameters Generations: int")
+        ("GeneticParameters.Generations",boost::program_options::value< vector_double >(&GeneticParameters_Generations) ->multitoken()->required(),"GeneticParameters Generations: floats")
         ("GeneticParameters.InitialTemperature",boost::program_options::value< double >(&GeneticParameters_InitialTemperature) ->required(),"GeneticParameters InitialTemperature: float")
         ("GeneticParameters.PopulationSize",boost::program_options::value< int >(&GeneticParameters_PopulationSize) ->required(),"GeneticParameters PopulationSize: int")
         ("GeneticParameters.CrossoverOp",boost::program_options::value< std::string >(&GeneticParameters_CrossoverOp) ->required(),"GeneticParameters CrossoverOp: string")
         ("Cluster.Nodes",boost::program_options::value< endpoint_list >(&Cluster_Nodes) ->multitoken()->required(),"Cluster Nodes: ip_port_list")
         ("Cluster.MasterNode",boost::program_options::value< endpoint >(&Cluster_MasterNode) ->required(),"Cluster MasterNode: ip_port")
+        ("Cluster.certificates",boost::program_options::value< url_list >(&Cluster_certificates) ->multitoken()->required(),"Cluster certificates: url_list")
         ;
         boost::program_options::variables_map vars_map;
         std::ifstream conf(ConfigName.c_str());
@@ -42,6 +44,7 @@ bool NodeOptions::Parse(std::string const& ConfigName,int argc,char *argv[],boos
         pVM->insert(std::make_pair("GeneticParameters.CrossoverOp", ValueType(GeneticParameters_CrossoverOp)));
         pVM->insert(std::make_pair("Cluster.Nodes", ValueType(Cluster_Nodes)));
         pVM->insert(std::make_pair("Cluster.MasterNode", ValueType(Cluster_MasterNode)));
+        pVM->insert(std::make_pair("Cluster.certificates", ValueType(Cluster_certificates)));
         if(vars_map.count("debug"))pVM->insert(std::make_pair("debug",ValueType(1)));
         else pVM->insert(std::make_pair("debug",ValueType(0)));
         return true;

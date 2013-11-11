@@ -29,6 +29,18 @@ ValueType::ValueType(std::string const & val_string)
 {
     m_data=val_string;
 }
+ValueType::ValueType(url_list const & val_url_list)
+{
+    m_data=val_url_list;
+}
+ValueType::ValueType(url_string const & val_url_string)
+{
+    m_data=val_url_string;
+}
+ValueType::ValueType(vector_double const & val_vector_double)
+{
+    m_data=val_vector_double;
+}
 bool ValueType::get_bool()
 {
     return boost::get<bool >(m_data);
@@ -56,6 +68,18 @@ path_list ValueType::get_path_list()
 std::string ValueType::get_string()
 {
     return boost::get<std::string >(m_data);
+}
+url_list ValueType::get_url_list()
+{
+    return boost::get<url_list >(m_data);
+}
+url_string ValueType::get_url_string()
+{
+    return boost::get<url_string >(m_data);
+}
+vector_double ValueType::get_vector_double()
+{
+    return boost::get<vector_double >(m_data);
 }
 std::ostream & operator <<(std::ostream& os,const ValueType & T)
 {

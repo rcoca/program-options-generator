@@ -12,36 +12,49 @@ bool ConfigMap::ReloadConfig()
 {
 
         boost::mutex::scoped_lock lock(m_mutex);
-        try{
-           boost::shared_ptr<ValueTypeMap> PtrVariablesMap(new ValueTypeMap());
-           OptParser->Parse(FileName,m_argc,m_argv,PtrVariablesMap);
-           m_map=PtrVariablesMap;
-           return true;
+        try
+        {
+            boost::shared_ptr<ValueTypeMap> PtrVariablesMap(new ValueTypeMap());
+            OptParser->Parse(FileName,m_argc,m_argv,PtrVariablesMap);
+            m_map=PtrVariablesMap;
+            return true;
         }
         catch(boost::program_options::validation_error &e)
-        {std::cerr<<"Parse Error["<<FileName<<"]:"<<e.what()<<std::endl;}
+        {
+            std::cerr<<"Parse Error["<<FileName<<"]:"<<e.what()<<std::endl;
+        }
         catch(std::exception &e)
-        {std::cerr<<e.what()<<std::endl;}
+        {
+            std::cerr<<e.what()<<std::endl;
+        }
         catch(...)
-        {std::cerr<<"Unknown Error["<<FileName<<"]"<<std::endl;}
+        {
+            std::cerr<<"Unknown Error["<<FileName<<"]"<<std::endl;
+        }
 }
 bool ConfigMap::ReloadConfig(std::string const &xConfigFile)
 {
 
-        boost::mutex::scoped_lock lock(m_mutex);
-        try{
-           boost::shared_ptr<ValueTypeMap> PtrVariablesMap(new ValueTypeMap());
-           OptParser->Parse(xConfigFile,m_argc,m_argv,PtrVariablesMap);
-           m_map=PtrVariablesMap;
-           FileName=xConfigFile;
-           return true;
-        }
-        catch(boost::program_options::validation_error &e)
-        {std::cerr<<"Parse Error["<<xConfigFile<<"]:"<<e.what()<<std::endl;}
-        catch(std::exception &e)
-        {std::cerr<<e.what()<<std::endl;}
-        catch(...)
-        {std::cerr<<"Unknown Error["<<xConfigFile<<"]"<<std::endl;}
+            boost::mutex::scoped_lock lock(m_mutex);
+            try{
+               boost::shared_ptr<ValueTypeMap> PtrVariablesMap(new ValueTypeMap());
+               OptParser->Parse(xConfigFile,m_argc,m_argv,PtrVariablesMap);
+               m_map=PtrVariablesMap;
+               FileName=xConfigFile;
+               return true;
+            }
+            catch(boost::program_options::validation_error &e)
+            {
+                std::cerr<<"Parse Error["<<xConfigFile<<"]:"<<e.what()<<std::endl;
+            }
+            catch(std::exception &e)
+            {
+                std::cerr<<e.what()<<std::endl;
+            }
+            catch(...)
+            {
+                std::cerr<<"Unknown Error["<<xConfigFile<<"]"<<std::endl;
+            }
 }
 ConfigMap::iterator ConfigMap::begin()
 {

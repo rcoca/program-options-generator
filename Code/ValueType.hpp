@@ -3,6 +3,7 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <vector>
 #include <boost/variant.hpp>
 #include "ConfUtils.hpp"
 #include "endpoint.hpp"
@@ -15,7 +16,7 @@
 class ValueType 
 {
 private:
-    boost::variant<bool, double, endpoint, endpoint_list, int, path_list, std::string > m_data;
+    boost::variant<bool, double, endpoint, endpoint_list, int, path_list, std::string, url_list, url_string, vector_double > m_data;
 
     ValueType () ;
 
@@ -34,6 +35,12 @@ public:
 
     ValueType (std::string const & val_string) ;
 
+    ValueType (url_list const & val_url_list) ;
+
+    ValueType (url_string const & val_url_string) ;
+
+    ValueType (vector_double const & val_vector_double) ;
+
     bool get_bool () ;
 
     double get_double () ;
@@ -47,6 +54,12 @@ public:
     path_list get_path_list () ;
 
     std::string get_string () ;
+
+    url_list get_url_list () ;
+
+    url_string get_url_string () ;
+
+    vector_double get_vector_double () ;
 
     friend std::ostream & operator << (std::ostream& os, const ValueType & T) ;
 
