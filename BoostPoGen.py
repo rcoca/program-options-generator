@@ -21,7 +21,9 @@ STypesDict={'ip_port'              : ('endpoint','required'),
             'host_port'            : ('endpoint','required'),
             'path_list'            : ('path_list','multitoken','required'),
             'ip_port_list'         : ('endpoint_list','multitoken','required'),
-            'floats'                : ('vector_double','multitoken','required'),
+            'url_list'             : ('url_list','multitoken','required'),
+            'url'                  : ('url_string','required'),
+            'floats'               : ('vector_double','multitoken','required'),
             'string'               : ('std::string','required'),
             'int'                  : ('int','required'),
             'float'                : ('double','required'),
@@ -38,6 +40,8 @@ def guessKeyType(text):
         ('^[A-z\-\.0-9]+[\-:/]\s*[0-9]+$','host_port'),
         ('^\s*([0-9]+\.[0-9]+\s*,\s*)+[0-9]+\.[0-9]+','floats'),
         ('^\s*[0-9]+\.[0-9]+','float'),
+        ('^((ftp://|http://|https://|file://).*\s*,)+\s*((ftp://|http://|https://|file://).*)$','url_list'),
+        ('^(ftp://|http://|https://|file://).*$','url_string'),
         ('^/[A-z0-9/ \-\.,]+$','path_list'),
         ('^[Tt]rue|[Ff]alse','bool'),
         ('^\s*[0-9]+','int'),
@@ -73,6 +77,18 @@ def GenTypesAndValidators(typename="ValueType"):
                                                                '#include "endpoint.hpp"'])
     C.add_member('std::vector<endpoint>', 'endpoints')
     Classes.append(C)
+
+    C=ClassHolder('url_string',classtype='struct',includes=['#include <string>'])
+    C.add_member('std::string','protocol')
+    C.add_member('std::string','host')
+    C.add_member('std::string', 'path')
+    Classes.append(C)
+
+    C=ClassHolder('url_list',classtype='struct',includes=['#include <string>'])
+    C.add_member('std::vector<url_string>', 'list')
+    Classes.append(C)
+    
+
     C=ClassHolder('vector_double',classtype='struct',includes=['#include <string>','#include <vector>'])
     C.add_member('std::vector<double>', 'values')
     Classes.append(C)
@@ -81,7 +97,9 @@ def GenTypesAndValidators(typename="ValueType"):
                                        ['#include "endpoint.hpp"',
                                         '#include "endpoint_list.hpp"',
                                         '#include "path_list.hpp"',
-                                        '#include "vector_double.hpp"'])
+                                        '#include "vector_double.hpp"',
+                                        '#include "url_string.hpp"',
+                                        '#include "url_list.hpp"'])
 
 
     Functions.add_function('std::ostream&', 'operator<<',template_def='template<typename T>',
@@ -98,8 +116,17 @@ def GenTypesAndValidators(typename="ValueType"):
                            margs=['std::ostream & os','const endpoint& ep'],
                            body=FileBody('parts/ostream.endpoint.part')())
 
+
     Functions.add_function('std::ostream &','operator<<',margs=['std::ostream& os','const endpoint_list& elist'],
                            body=FileBody('parts/ostream.endpoints.part')())
+
+    Functions.add_function('std::ostream &','operator<<',
+                           margs=['std::ostream & os','const url_string& url'],
+                           body=FileBody('parts/ostream.url_string.part')())
+
+    Functions.add_function('std::ostream &','operator<<',
+                           margs=['std::ostream & os','const url_list& urls'],
+                           body=FileBody('parts/ostream.url_list.part')())
 
     Functions.add_function('std::ostream &','operator<<',margs=['std::ostream& os','const path_list& plist'],
                            body=FileBody('parts/ostream.path_list.part')())
@@ -119,6 +146,7 @@ def GenTypesAndValidators(typename="ValueType"):
                                                     'const std::vector<std::string>& values',
                                                     'endpoint* target_type', 'int'],
                            body=FileBody('parts/validate.endpoint.part')())
+
  
     Functions.add_function('void','validate',margs=['boost::any& value', 
                                                     'const std::vector<std::string>& values', 
@@ -130,6 +158,17 @@ def GenTypesAndValidators(typename="ValueType"):
                                                     'const std::vector<std::string>& values',
                                                     'endpoint_list* target_type', 'int'],
                            body=FileBody('parts/validate.endpoint_list.part')())
+    
+    Functions.add_function('void','validate',margs=['boost::any& value',
+                                                    'const std::vector<std::string>& values',
+                                                    'url_string* target_type', 'int'],
+                           body=FileBody('parts/validate.url_string.part')())
+
+    Functions.add_function('void','validate',margs=['boost::any& value',
+                                                    'const std::vector<std::string>& values',
+                                                    'url_list* target_type', 'int'],
+                           body=FileBody('parts/validate.url_list.part')())
+
     Classes+=GenInterfaceParser()
     typelist=TypeList()
     Classes.append(GenAccessClass(typename,typelist))
