@@ -141,12 +141,12 @@ void validate (boost::any& value, const std::vector<std::string>& values, url_st
     const std::string& input = boost::program_options::validators::get_single_string(values);
 
     
-    boost::regex exrp( "^([A-z]+)\\://([A-z\\.\\-]+[\\:0-9]*)[/]?(.*)$") ;
+    boost::regex exrp( "^([A-z]+)\\://([A-z\\.\\-]+(\\:[0-9]+)*)[/]?(.*)$") ;
     boost::match_results<std::string::const_iterator> what;
     if( regex_search( input, what, exrp ) ) {
         url.protocol=std::string( what[1].first, what[1].second );
         url.host=std::string( what[2].first, what[2].second );
-	url.path=std::string( what[3].first, what[3].second );
+	url.path=std::string( what[what.size()-1].first, what[what.size()-1].second );
     }
     else
     {
@@ -167,7 +167,7 @@ void validate (boost::any& value, const std::vector<std::string>& values, url_li
     const std::string& s = boost::program_options::validators::get_single_string(values);
     boost::split( list_elements , s, boost::is_any_of( "," ) );
     std::vector<std::string>::iterator i=list_elements.begin();   
-    boost::regex exrp( "^([A-z]+)\\://([A-z\\.\\-]+[\\:0-9]*)[/]?(.*)$") ;
+    boost::regex exrp( "^([A-z]+)\\://([A-z\\.\\-]+(\\:[0-9]+)*)[/]?(.*)$") ;
     for(;i!=list_elements.end();i++)
     {
         url_string url;
@@ -177,7 +177,7 @@ void validate (boost::any& value, const std::vector<std::string>& values, url_li
 	{
             url.protocol=std::string( what[1].first, what[1].second );
             url.host=std::string( what[2].first, what[2].second );
-	    url.path=std::string( what[3].first, what[3].second );
+	    url.path=std::string( what[what.size()-1].first, what[what.size()-1].second );
 	    urls.list.push_back(url);
     	}
 	else
