@@ -288,7 +288,7 @@ def GenConfigLookupMap(typename='ValueType'):
 
     
     Class.add_method('bool', 'ReloadConfig',margs=['std::string const &xConfigFile'],
-                     body=FileBody('parts/ConfigMap.Reload.0.part')(typename,typename))
+                     body=FileBody('parts/ConfigMap.Reload.1.part')(typename,typename))
 
     Class.add_method(typename,'operator []',margs=['std::string const & key'],
                      body=FileBody('parts/ConfigMap.get.part')(typename))
