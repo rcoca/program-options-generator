@@ -1,0 +1,21 @@
+
+    boost::program_options::validators::check_first_occurrence(value);
+    const std::string& s = boost::program_options::validators::get_single_string(values);
+    std::vector< std::string > tokens;
+    vector_double  numbers;
+    boost::split( tokens, s, boost::is_any_of( "," ) );
+    std::vector<std::string>::iterator i=tokens.begin();
+    for(;i!=tokens.end();i++)
+    {
+        double number;
+        try
+        {
+            number=boost::lexical_cast<double,std::string>(*i);
+            numbers.values.push_back(number);
+        }
+        catch(boost::bad_lexical_cast &e)
+        {
+            throw boost::program_options::validation_error(boost::program_options::validation_error::invalid_option_value,"double",s);
+        }
+    }
+    value=boost::any(numbers) ;

@@ -1,0 +1,3 @@
+
+    os<<elist.endpoints;
+    return os;

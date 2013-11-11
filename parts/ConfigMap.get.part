@@ -1,0 +1,5 @@
+
+    boost::mutex::scoped_lock lock(m_mutex);
+    %sMap::const_iterator i=m_map->find(key);
+    if(i!=m_map->end())return i->second;
+    throw std::runtime_error(std::string("key:")+key+" not found");

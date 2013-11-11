@@ -1,0 +1,26 @@
+
+    std::vector<std::string> list_elements;
+    endpoint_list end_points;
+    boost::program_options::validators::check_first_occurrence(value);
+    const std::string& str = boost::program_options::validators::get_single_string(values);
+    boost::split( list_elements , str, boost::is_any_of( "," ) );
+    std::vector<std::string>::iterator i=list_elements.begin();
+    for(;i!=list_elements.end();i++)
+    {
+        endpoint Endpoint;
+        std::vector< std::string > tokens;
+        boost::split( tokens, *i, boost::is_any_of( "/:-" ) );
+        if (tokens.size() !=2)
+             throw boost::program_options::validation_error(boost::program_options::validation_error::invalid_option_value,  "endpoint",str );
+        Endpoint.address=tokens[0];
+        try
+        {
+              Endpoint.port=boost::lexical_cast<unsigned short,std::string>(tokens[1]);
+        }
+        catch(boost::bad_lexical_cast &e)
+        {
+            throw boost::program_options::validation_error(boost::program_options::validation_error::invalid_option_value,"endpoint",str);
+        }
+        end_points.endpoints.push_back(Endpoint);
+    }
+    value=boost::any(end_points);

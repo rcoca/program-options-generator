@@ -1,0 +1,3 @@
+
+    os<<url.protocol<<"://"<<url.host<<"/"<<url.path;
+    return os;

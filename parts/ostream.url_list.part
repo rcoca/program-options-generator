@@ -1,0 +1,3 @@
+
+    os<<urls.list;
+    return os;

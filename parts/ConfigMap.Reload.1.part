@@ -1,0 +1,21 @@
+
+        boost::mutex::scoped_lock lock(m_mutex);
+        try{
+           boost::shared_ptr<%sMap> PtrVariablesMap(new %sMap());
+           OptParser->Parse(xConfigFile,m_argc,m_argv,PtrVariablesMap);
+           m_map=PtrVariablesMap;
+           FileName=xConfigFile;
+           return true;
+        }
+        catch(boost::program_options::validation_error &e)
+        {
+            std::cerr<<"Parse Error["<<xConfigFile<<"]:"<<e.what()<<std::endl;
+        }
+        catch(std::exception &e)
+        {
+            std::cerr<<e.what()<<std::endl;
+        }
+        catch(...)
+        {
+            std::cerr<<"Unknown Error["<<xConfigFile<<"]"<<std::endl;
+        }

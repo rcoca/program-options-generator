@@ -1,0 +1,6 @@
+
+    boost::program_options::validators::check_first_occurrence(value);
+    const std::string& s = boost::program_options::validators::get_single_string(values);
+    std::vector< std::string > tokens;
+    boost::split( tokens, s, boost::is_any_of( "," ) );
+    value=boost::any(tokens);

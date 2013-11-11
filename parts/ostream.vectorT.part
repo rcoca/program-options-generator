@@ -1,0 +1,6 @@
+
+    typename std::vector<T>::const_iterator i=v.begin();
+    os<<"[ ";
+    for(;i!=v.end();++i)
+        os<<*i<<(i+1==v.end()?" ]":", ");
+    return os;

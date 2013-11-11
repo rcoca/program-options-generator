@@ -1,0 +1,3 @@
+
+    OptParser.reset(Parser);
+    OptParser->Parse(xConfigFile,argc,argv,m_map);

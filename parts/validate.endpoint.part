@@ -1,0 +1,18 @@
+
+    endpoint Endpoint;
+    boost::program_options::validators::check_first_occurrence(value);
+    const std::string& String = boost::program_options::validators::get_single_string(values);
+    std::vector< std::string > tokens;
+    boost::split( tokens, String, boost::is_any_of( "/:-" ) );
+    if ( tokens.size()!=2 )
+    throw boost::program_options::validation_error(boost::program_options::validation_error::invalid_option_value,"endpoint",String );
+    Endpoint.address=tokens[0];
+    try
+    {
+        Endpoint.port=boost::lexical_cast<unsigned short,std::string>(tokens[1]);
+    }
+    catch(boost::bad_lexical_cast &e)
+    {
+        throw boost::program_options::validation_error(boost::program_options::validation_error::invalid_option_value,"endpoint",String);
+    }
+    value=boost::any(Endpoint);

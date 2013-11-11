@@ -1,0 +1,7 @@
+
+    path_list paths;
+    boost::program_options::validators::check_first_occurrence(value);
+    const std::string& str = boost::program_options::validators::get_single_string(values);
+    std::vector< std::string > tokens;
+    boost::split( paths.paths, str, boost::is_any_of( "," ) );
+    value=boost::any(paths);
