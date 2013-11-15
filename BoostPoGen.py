@@ -33,6 +33,7 @@ STypesDict={'ip_port'              : ('endpoint','required'),
 def TypeList():
     return sorted(list(set(map(lambda x:x[0],STypesDict.values()))))
 
+
 def guessKeyType(text):
     Types=[
         ('([0-9]{1,}\.){3,}[0-9]{1,}[\-:/]\s*[0-9]+\s*,\s*','ip_port_list'),
@@ -47,9 +48,18 @@ def guessKeyType(text):
         ('^\s*[0-9]+','int'),
         ('^[A-z]+.*','string')
         ]
+    
     for k,v in Types:
+        K=k.replace('$','\s+#\s+.*$')
+        if re.search(K,text):
+            option=map(lambda x:x.strip(),text.split('#'))
+            if len(option)>1:
+                return v,[option[-1]]+list(STypesDict[v][1:-1])
+            else:
+                return v,list(STypesDict[v][1:])
         if re.search(k,text):
-            return v
+            return v,list(STypesDict[v][1:])
+ 
     return None
 
 def GenTypesAndValidators(typename="ValueType"):
@@ -243,7 +253,8 @@ def GenSpecificParser(ParsedConf,cfg,typename='ValueType'):
 
     for section in ParsedConf.sections():
         for option in ParsedConf.options(section):
-            val_type=guessKeyType(ParsedConf.get(section,option))
+            #print guessKeyType(ParsedConf.get(section,option))
+            val_type,option_type=guessKeyType(ParsedConf.get(section,option))
             #print section,option,val_type
             computed_type=STypesDict[val_type][0]
             computed_name="_".join([section,option])
@@ -257,11 +268,14 @@ def GenSpecificParser(ParsedConf,cfg,typename='ValueType'):
     print "Summary:"
     for section in ParsedConf.sections():
         for option in ParsedConf.options(section):
-            val_type=guessKeyType(ParsedConf.get(section,option))
+            val_type,option_type    = guessKeyType(ParsedConf.get(section,option))
             print "%s\t %s \t (%s)"%(section,option,val_type)
             computed_type=STypesDict[val_type][0]
             computed_name="_".join([section,option])
-            extra_options=["->%s()"%k for k in STypesDict[val_type][1:]]
+            
+            #extra_options=["->%s()"%k for k in STypesDict[val_type][1:]]
+            option_type=filter(lambda x:x!='optional',option_type)
+            extra_options=["->%s()"%k for k in option_type]
             extra_options="".join(extra_options)
             computed_kw="%s.%s"%(section,option)
             computed_help="%s %s: %s (ex:%s)"%(section,option,val_type,ParsedConf.get(section,option))
@@ -286,7 +300,7 @@ def GenSpecificParser(ParsedConf,cfg,typename='ValueType'):
     
     for section in ParsedConf.sections():
         for option in ParsedConf.options(section):
-            val_type=guessKeyType(ParsedConf.get(section,option))
+            val_type,option_type=guessKeyType(ParsedConf.get(section,option))
             #print section,option,val_type
             computed_type=STypesDict[val_type][0]
             computed_key=".".join([section,option])
