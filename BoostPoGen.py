@@ -264,21 +264,26 @@ def GenSpecificParser(ParsedConf,cfg,typename='ValueType'):
             extra_options=["->%s()"%k for k in STypesDict[val_type][1:]]
             extra_options="".join(extra_options)
             computed_kw="%s.%s"%(section,option)
-            computed_help="%s %s: %s"%(section,option,val_type)
+            computed_help="%s %s: %s (ex:%s)"%(section,option,val_type,ParsedConf.get(section,option))
             code += [field_template%(computed_kw,computed_type,computed_name,extra_options,computed_help)]
     code += [";"]
     code += ['boost::program_options::variables_map vars_map;']
-    code += ['std::ifstream conf(ConfigName.c_str());']
     code += ['boost::program_options::store(boost::program_options::parse_command_line(argc,argv,description),vars_map);']
     code += ['if(vars_map.count("help"))std::cout<<description<<std::endl;']
     code += ['if(vars_map.count("debug"))std::cout<<"debug mode"<<std::endl;']
-    code += ['if(conf.is_open())']
-    code += ['    boost::program_options::store(boost::program_options::parse_config_file(conf,description),vars_map);']
-    code += ['else']
-    code += ['   throw std::runtime_error(ConfigName+":"+std::strerror( errno ));']
-    code += ['boost::program_options::store(boost::program_options::parse_command_line(argc,argv,description),vars_map);']
+    code += ['//if config is a usefull parameter in ctor, then use it, else ignore it']
+    code += ['if(ConfigName.size())']
+    code += ['{']
+    code += ['    std::ifstream conf(ConfigName.c_str());']
+    code += ['    if(conf.is_open())']
+    code += ['        boost::program_options::store(boost::program_options::parse_config_file(conf,description),vars_map);']
+    code += ['    else']
+    code += ['        throw std::runtime_error(ConfigName+":"+std::strerror( errno ));']
+    code += ['    //override config with command line']
+    code += ['    boost::program_options::store(boost::program_options::parse_command_line(argc,argv,description),vars_map);']
+    code += ['}']
     code += ['boost::program_options::notify(vars_map);']
-
+    
     for section in ParsedConf.sections():
         for option in ParsedConf.options(section):
             val_type=guessKeyType(ParsedConf.get(section,option))
@@ -290,7 +295,9 @@ def GenSpecificParser(ParsedConf,cfg,typename='ValueType'):
     code += ['if(vars_map.count("debug"))pVM->insert(std::make_pair("debug",%s(1)));'%typename]
     code += ['else pVM->insert(std::make_pair("debug",%s(0)));'%typename]
     code += ['return true;']
+    
     Body=("\n"+4*' ').join(code)
+
     Class.add_method('bool','Parse',margs=['std::string const& ConfigName','int argc','char *argv[]',
                                            'boost::shared_ptr<%sMap> pVM'%typename],body=Body)
     return [Class]
