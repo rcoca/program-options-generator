@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
     try
     {
 
-        ConfigMap MyConfigMap(new NodeOptions(),std::string("node.config"),argc,argv);
+        ConfigMap MyConfigMap(new NodeOptions(),"node.config",argc,argv);
         std::cerr<<"Map Size:"<<MyConfigMap.size()<<std::endl;
 
         try

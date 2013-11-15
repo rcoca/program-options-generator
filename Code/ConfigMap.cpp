@@ -1,7 +1,7 @@
 
 #include "ConfigMap.hpp"
 
-ConfigMap::ConfigMap(OptionsParser *Parser,std::string const &xConfigFile,int argc,char *argv[])
+ConfigMap::ConfigMap(OptionsParser *Parser,const char *xConfigFile,int argc,char *argv[])
     :FileName(xConfigFile), m_argc(argc), m_argv(argv), m_map(new ValueTypeMap())
 {
 

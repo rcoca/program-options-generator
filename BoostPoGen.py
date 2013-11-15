@@ -339,7 +339,7 @@ def GenConfigLookupMap(typename='ValueType'):
 
     Class.add_method('','ConfigMap',access='private')    
     Class.add_method('','ConfigMap',margs=['OptionsParser *Parser',
-                                           'std::string const &xConfigFile',
+                                           'const char *xConfigFile',
                                            'int argc','char *argv[]'],
                      initializers=initializers,body=FileBody('parts/ConfigMap.Ctor.part')())
 

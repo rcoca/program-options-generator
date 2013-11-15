@@ -34,7 +34,7 @@ public:
 
     typedef ValueTypeMap::const_iterator const_iterator;
 
-    ConfigMap (OptionsParser *Parser, std::string const &xConfigFile, int argc, char *argv[]) ;
+    ConfigMap (OptionsParser *Parser, const char *xConfigFile, int argc, char *argv[]) ;
 
     bool ReloadConfig () ;
 
