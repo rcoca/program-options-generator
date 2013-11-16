@@ -397,6 +397,7 @@ if __name__ == '__main__':
     Common=GenTypesAndValidators()
     Extra=[]
     for cfg in RecurseFindConfigs('.','.*\.config$'):
+        print "Found:%s"%cfg
         ConfP=ConfigParser.ConfigParser()
         ConfP.optionxform=str
         ConfP.read(cfg)
