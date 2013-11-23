@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 # razvan.coca@gmail.com
-import ConfigParser
 import os,glob,re
 import ast
 import os, shutil
 import sys
 sys.path.append('.')
+from SectionlessConfigParser import SectionlessConfigParser
 
 from GenHelper import *
 
@@ -286,8 +286,8 @@ def GenSpecificParser(ParsedConf,cfg,typename='ValueType'):
             extra_options="".join(extra_options)
             
             computed_kw=comp_key(section,option,nosect=nosection)
-            computed_help="%s %s: %s (ex:%s)"%(section,option,val_type,ParsedConf.get(section,option))
-            code += [field_template%(computed_kw,computed_type,computed_name,extra_options,computed_help)]
+            computed_help="%s %s: %s (ex:%s)"%("" if nosection else section,option,val_type,ParsedConf.get(section,option))
+            code += [field_template%(computed_kw,computed_type,computed_name,extra_options,computed_help.lstrip())]
             #it could recognize the default section syntax, too, but looks ugly in the help text 
             #if nosection:
             #    computed_kw=comp_key(section,option,nosect=False)
@@ -412,7 +412,8 @@ if __name__ == '__main__':
     Extra=[]
     for cfg in RecurseFindConfigs('.','.*\.config$'):
         print "\nFound:\t%s\n"%cfg
-        ConfP=ConfigParser.ConfigParser()
+        #ConfP=ConfigParser.ConfigParser()
+        ConfP=SectionlessConfigParser()
         ConfP.optionxform=str
         ConfP.read(cfg)
         Extra+=GenSpecificParser(ConfP,cfg,typename='ValueType')
