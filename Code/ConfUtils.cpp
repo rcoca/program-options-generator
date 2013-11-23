@@ -167,7 +167,7 @@ void validate (boost::any& value, const std::vector<std::string>& values, url_li
     const std::string& s = boost::program_options::validators::get_single_string(values);
     boost::split( list_elements , s, boost::is_any_of( "," ) );
     std::vector<std::string>::iterator i=list_elements.begin();
-    boost::regex exrp( "^([A-z]+)\\://([A-z\\.\\-]+(\\:[0-9]+)*)[/]?(.*)$") ;
+    boost::regex exrp( "^\\s*([A-z]+)\\://([A-z\\.\\-]+(\\:[0-9]+)*)[/]?(.*)$") ;
     for(; i!=list_elements.end(); i++)
     {
         url_string url;
