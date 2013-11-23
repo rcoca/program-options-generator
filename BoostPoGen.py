@@ -235,6 +235,12 @@ def GenAccessClass(typename,typelist):
                          body='    os<<T.m_data;\nreturn os;\n')
     return Class
 
+def comp_name(section,option,nosect=False):
+    if nosect:return option
+    return "_".join([section,option])
+def comp_key(section,option,nosect=False):
+    if nosect:return option
+    return ".".join([section,option])
 
 def GenSpecificParser(ParsedConf,cfg,typename='ValueType'):
     titlename=os.path.basename(cfg).split('.')[0].title()
@@ -251,14 +257,16 @@ def GenSpecificParser(ParsedConf,cfg,typename='ValueType'):
     code  = [""]
     code += ["boost::program_options::options_description description(\"%s options\");"%titlename]
 
+    nosection=(len(ParsedConf.sections())==1)
+    #print ParsedConf.sections()
     for section in ParsedConf.sections():
         for option in ParsedConf.options(section):
             #print guessKeyType(ParsedConf.get(section,option))
             val_type,option_type=guessKeyType(ParsedConf.get(section,option))
             #print section,option,val_type
             computed_type=STypesDict[val_type][0]
-            computed_name="_".join([section,option])
-            code  += [("%s  %s;"%(computed_type,"_".join([section,option])))]
+            computed_name=comp_name(section,option,nosect=nosection)
+            code  += [("%s  %s;"%(computed_type,computed_name))]
     
     code += [";"]
     code += ["description.add_options()"]
@@ -271,13 +279,12 @@ def GenSpecificParser(ParsedConf,cfg,typename='ValueType'):
             val_type,option_type    = guessKeyType(ParsedConf.get(section,option))
             print "%s\t %s \t (%s)"%(section,option,val_type)
             computed_type=STypesDict[val_type][0]
-            computed_name="_".join([section,option])
-            
+            computed_name=comp_name(section,option,nosect=nosection)
             #extra_options=["->%s()"%k for k in STypesDict[val_type][1:]]
             option_type=filter(lambda x:x!='optional',option_type)
             extra_options=["->%s()"%k for k in option_type]
             extra_options="".join(extra_options)
-            computed_kw="%s.%s"%(section,option)
+            computed_kw=comp_key(section,option,nosect=nosection)
             computed_help="%s %s: %s (ex:%s)"%(section,option,val_type,ParsedConf.get(section,option))
             code += [field_template%(computed_kw,computed_type,computed_name,extra_options,computed_help)]
     code += [";"]
@@ -303,8 +310,8 @@ def GenSpecificParser(ParsedConf,cfg,typename='ValueType'):
             val_type,option_type=guessKeyType(ParsedConf.get(section,option))
             #print section,option,val_type
             computed_type=STypesDict[val_type][0]
-            computed_key=".".join([section,option])
-            computed_name="_".join([section,option])
+            computed_key=comp_key(section,option,nosect=nosection)
+            computed_name=comp_name(section,option,nosect=nosection)
             code += ['pVM->insert(std::make_pair("%s", %s(%s)));'%(computed_key,typename,computed_name)]
     code += ['if(vars_map.count("debug"))pVM->insert(std::make_pair("debug",%s(1)));'%typename]
     code += ['else pVM->insert(std::make_pair("debug",%s(0)));'%typename]
