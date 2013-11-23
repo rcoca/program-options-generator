@@ -284,9 +284,16 @@ def GenSpecificParser(ParsedConf,cfg,typename='ValueType'):
             option_type=filter(lambda x:x!='optional',option_type)
             extra_options=["->%s()"%k for k in option_type]
             extra_options="".join(extra_options)
+            
             computed_kw=comp_key(section,option,nosect=nosection)
             computed_help="%s %s: %s (ex:%s)"%(section,option,val_type,ParsedConf.get(section,option))
             code += [field_template%(computed_kw,computed_type,computed_name,extra_options,computed_help)]
+            #it could recognize the default section syntax, too, but looks ugly in the help text 
+            #if nosection:
+            #    computed_kw=comp_key(section,option,nosect=False)
+            #    code += [field_template%(computed_kw,computed_type,computed_name,extra_options,computed_help)]
+                
+
     code += [";"]
     code += ['boost::program_options::variables_map vars_map;']
     code += ['boost::program_options::store(boost::program_options::parse_command_line(argc,argv,description),vars_map);']
