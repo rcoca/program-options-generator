@@ -1,8 +1,9 @@
 
-        boost::mutex::scoped_lock lock(m_mutex);
+
         try{
            boost::shared_ptr<%sMap> PtrVariablesMap(new %sMap());
            OptParser->Parse(xConfigFile,m_argc,m_argv,PtrVariablesMap);
+           boost::mutex::scoped_lock lock(m_mutex);
            m_map=PtrVariablesMap;
            FileName=xConfigFile;
            return true;
