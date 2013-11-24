@@ -319,7 +319,7 @@ def GenSpecificParser(ParsedConf,cfg,typename='ValueType'):
             computed_type=STypesDict[val_type][0]
             computed_key=comp_key(section,option,nosect=nosection)
             computed_name=comp_name(section,option,nosect=nosection)
-            code += ['pVM->insert(std::make_pair("%s", %s(%s)));'%(computed_key,typename,computed_name)]
+            code += ['if(vars_map.count("%s"))pVM->insert(std::make_pair("%s", %s(%s)));'%(computed_key,computed_key,typename,computed_name)]
     code += ['if(vars_map.count("debug"))pVM->insert(std::make_pair("debug",%s(1)));'%typename]
     code += ['else pVM->insert(std::make_pair("debug",%s(0)));'%typename]
     code += ['return true;']

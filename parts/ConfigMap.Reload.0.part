@@ -2,8 +2,9 @@
     try
     {
         boost::shared_ptr<%sMap> PtrVariablesMap(new %sMap());
-        OptParser->Parse(FileName,m_argc,m_argv,PtrVariablesMap);
+
         boost::mutex::scoped_lock lock(m_mutex);
+        OptParser->Parse(FileName,m_argc,m_argv,PtrVariablesMap);
         m_map=PtrVariablesMap;
         return true;
     }

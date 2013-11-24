@@ -40,13 +40,13 @@ bool SimpleOptions::Parse(std::string const& ConfigName,int argc,char *argv[],bo
             boost::program_options::store(boost::program_options::parse_command_line(argc,argv,description),vars_map);
         }
         boost::program_options::notify(vars_map);
-        pVM->insert(std::make_pair("DataDir", ValueType(DataDir)));
-        pVM->insert(std::make_pair("Generations", ValueType(Generations)));
-        pVM->insert(std::make_pair("InitialTemperature", ValueType(InitialTemperature)));
-        pVM->insert(std::make_pair("PopulationSize", ValueType(PopulationSize)));
-        pVM->insert(std::make_pair("Nodes", ValueType(Nodes)));
-        pVM->insert(std::make_pair("MasterNode", ValueType(MasterNode)));
-        pVM->insert(std::make_pair("certificates", ValueType(certificates)));
+        if(vars_map.count("DataDir"))pVM->insert(std::make_pair("DataDir", ValueType(DataDir)));
+        if(vars_map.count("Generations"))pVM->insert(std::make_pair("Generations", ValueType(Generations)));
+        if(vars_map.count("InitialTemperature"))pVM->insert(std::make_pair("InitialTemperature", ValueType(InitialTemperature)));
+        if(vars_map.count("PopulationSize"))pVM->insert(std::make_pair("PopulationSize", ValueType(PopulationSize)));
+        if(vars_map.count("Nodes"))pVM->insert(std::make_pair("Nodes", ValueType(Nodes)));
+        if(vars_map.count("MasterNode"))pVM->insert(std::make_pair("MasterNode", ValueType(MasterNode)));
+        if(vars_map.count("certificates"))pVM->insert(std::make_pair("certificates", ValueType(certificates)));
         if(vars_map.count("debug"))pVM->insert(std::make_pair("debug",ValueType(1)));
         else pVM->insert(std::make_pair("debug",ValueType(0)));
         return true;

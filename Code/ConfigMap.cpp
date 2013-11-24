@@ -11,10 +11,11 @@ ConfigMap::ConfigMap(OptionsParser *Parser,const char *xConfigFile,int argc,char
 bool ConfigMap::ReloadConfig()
 {
 
-        boost::mutex::scoped_lock lock(m_mutex);
         try
         {
             boost::shared_ptr<ValueTypeMap> PtrVariablesMap(new ValueTypeMap());
+    
+            boost::mutex::scoped_lock lock(m_mutex);
             OptParser->Parse(FileName,m_argc,m_argv,PtrVariablesMap);
             m_map=PtrVariablesMap;
             return true;
@@ -35,10 +36,11 @@ bool ConfigMap::ReloadConfig()
 bool ConfigMap::ReloadConfig(std::string const &xConfigFile)
 {
 
-            boost::mutex::scoped_lock lock(m_mutex);
             try{
                boost::shared_ptr<ValueTypeMap> PtrVariablesMap(new ValueTypeMap());
                OptParser->Parse(xConfigFile,m_argc,m_argv,PtrVariablesMap);
+               
+               boost::mutex::scoped_lock lock(m_mutex);
                m_map=PtrVariablesMap;
                FileName=xConfigFile;
                return true;

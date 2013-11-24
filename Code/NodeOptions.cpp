@@ -40,13 +40,13 @@ bool NodeOptions::Parse(std::string const& ConfigName,int argc,char *argv[],boos
             boost::program_options::store(boost::program_options::parse_command_line(argc,argv,description),vars_map);
         }
         boost::program_options::notify(vars_map);
-        pVM->insert(std::make_pair("Main.DataDir", ValueType(Main_DataDir)));
-        pVM->insert(std::make_pair("GeneticParameters.Generations", ValueType(GeneticParameters_Generations)));
-        pVM->insert(std::make_pair("GeneticParameters.InitialTemperature", ValueType(GeneticParameters_InitialTemperature)));
-        pVM->insert(std::make_pair("GeneticParameters.PopulationSize", ValueType(GeneticParameters_PopulationSize)));
-        pVM->insert(std::make_pair("Cluster.Nodes", ValueType(Cluster_Nodes)));
-        pVM->insert(std::make_pair("Cluster.MasterNode", ValueType(Cluster_MasterNode)));
-        pVM->insert(std::make_pair("Cluster.certificates", ValueType(Cluster_certificates)));
+        if(vars_map.count("Main.DataDir"))pVM->insert(std::make_pair("Main.DataDir", ValueType(Main_DataDir)));
+        if(vars_map.count("GeneticParameters.Generations"))pVM->insert(std::make_pair("GeneticParameters.Generations", ValueType(GeneticParameters_Generations)));
+        if(vars_map.count("GeneticParameters.InitialTemperature"))pVM->insert(std::make_pair("GeneticParameters.InitialTemperature", ValueType(GeneticParameters_InitialTemperature)));
+        if(vars_map.count("GeneticParameters.PopulationSize"))pVM->insert(std::make_pair("GeneticParameters.PopulationSize", ValueType(GeneticParameters_PopulationSize)));
+        if(vars_map.count("Cluster.Nodes"))pVM->insert(std::make_pair("Cluster.Nodes", ValueType(Cluster_Nodes)));
+        if(vars_map.count("Cluster.MasterNode"))pVM->insert(std::make_pair("Cluster.MasterNode", ValueType(Cluster_MasterNode)));
+        if(vars_map.count("Cluster.certificates"))pVM->insert(std::make_pair("Cluster.certificates", ValueType(Cluster_certificates)));
         if(vars_map.count("debug"))pVM->insert(std::make_pair("debug",ValueType(1)));
         else pVM->insert(std::make_pair("debug",ValueType(0)));
         return true;

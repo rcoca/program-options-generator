@@ -140,7 +140,7 @@ void validate (boost::any& value, const std::vector<std::string>& values, url_st
     const std::string& input = boost::program_options::validators::get_single_string(values);
 
 
-    boost::regex exrp( "^([A-z]+)\\://([A-z\\.\\-]+(\\:[0-9]+)*)[/]?(.*)$") ;
+    boost::regex exrp( "^\\s*([A-z]+)\\://([A-z\\.\\-]+(\\:[0-9]+)*)[/]?(.*)$") ;
     boost::match_results<std::string::const_iterator> what;
     if( regex_search( input, what, exrp ) )
     {
