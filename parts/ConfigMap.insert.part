@@ -1,0 +1,3 @@
+
+    boost::mutex::scoped_lock lock(m_mutex);
+    return m_map->insert(val);
