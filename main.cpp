@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
 
             }
         }
-
+        std::cout<<MyConfigMap<<std::endl;
     }
     catch(std::exception &e)
     {

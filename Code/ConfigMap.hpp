@@ -44,7 +44,13 @@ public:
 
     ConfigMap::iterator end () ;
 
+    size_t erase (std::string const & key) ;
+
     boost::mutex & getLock () ;
+
+    std::pair<ValueTypeMap::iterator,bool> insert (std::pair<std::string,ValueType> val) ;
+
+    friend std::ostream & operator << (std::ostream& os, ConfigMap & cmap) ;
 
     ValueType operator [] (const char* key) ;
 

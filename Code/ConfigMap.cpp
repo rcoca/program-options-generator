@@ -66,9 +66,29 @@ ConfigMap::iterator ConfigMap::end()
 {
     return m_map->end();
 }
+size_t ConfigMap::erase(std::string const & key)
+{
+
+        boost::mutex::scoped_lock lock(m_mutex);
+        return m_map->erase(key);
+}
 boost::mutex & ConfigMap::getLock()
 {
     return m_mutex;
+}
+std::pair<ValueTypeMap::iterator,bool> ConfigMap::insert(std::pair<std::string,ValueType> val)
+{
+
+        boost::mutex::scoped_lock lock(m_mutex);
+        return m_map->insert(val);
+}
+std::ostream & operator <<(std::ostream& os,ConfigMap & cmap)
+{
+
+        boost::mutex::scoped_lock lock(cmap.m_mutex);
+        for(ConfigMap::iterator i=cmap.begin();i!=cmap.end();i++)
+            os<<i->first<<" = "<<i->second<<std::endl;
+        return os;
 }
 ValueType ConfigMap::operator [](const char* key)
 {
