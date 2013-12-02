@@ -45,8 +45,8 @@ def guessKeyType(text):
         ('^(ftp://|http://|https://|file://).*$','url_string'),
         ('^/[A-z0-9/ \-\.,]+$','path_list'),
         ('^[Tt]rue|[Ff]alse','bool'),
-        ('^\s*[0-9]+','int'),
-        ('^[A-z]+.*','string')
+        ('^\s*[0-9]+\s*$','int'),
+        ('^[A-z0-9]+.*','string')
         ]
     
     for k,v in Types:
@@ -368,13 +368,21 @@ def GenConfigLookupMap(typename='ValueType'):
                      body=FileBody('parts/ConfigMap.get.part')(typename))
     Class.add_method(typename,'operator []',margs=['const char* key'],
                      body='    return (*this)[std::string(key)];')
-
+    Class.add_method('std::pair<%sMap::iterator,bool>'%typename,'insert',
+                     margs=['std::pair<std::string,%s> val'%typename],
+                     body=FileBody('parts/ConfigMap.insert.part')())
+    Class.add_method('size_t','erase',margs=['std::string const & key'],
+                     body=FileBody('parts/ConfigMap.erase.part')())
     Class.add_method('size_t','size',body='    boost::mutex::scoped_lock lock(m_mutex);\nreturn m_map->size();')
     Class.add_member('typedef','%sMap::iterator iterator'%typename)
     Class.add_member('typedef','%sMap::const_iterator const_iterator'%typename)
     Class.add_method('ConfigMap::iterator','begin',body='   return m_map->begin();')
     Class.add_method('ConfigMap::iterator','end',body='    return m_map->end();')
     Class.add_method(' boost::mutex &','getLock',body='    return m_mutex;',access='public')
+    Class.add_method('std::ostream &','operator <<',modifier='friend',
+                     margs=['std::ostream& os','ConfigMap & cmap'],
+                     body=FileBody('parts/ConfigMap.out.part')())
+    
     return [Class]
 
 def writeClassToPath(Class,basedir='.',stream=None):
@@ -407,10 +415,11 @@ def printFilesGeneratedOutput(Items,basedir='Code',stream=None):
 
 
 if __name__ == '__main__':
-    
+    if len(sys.argv)>1:bdir=sys.argv[1]
+    else: bdir='.'
     Common=GenTypesAndValidators()
     Extra=[]
-    for cfg in RecurseFindConfigs('.','.*\.config$'):
+    for cfg in RecurseFindConfigs(bdir,'.*\.config$'):
         print "\nFound:\t%s\n"%cfg
         #ConfP=ConfigParser.ConfigParser()
         ConfP=SectionlessConfigParser()
@@ -418,6 +427,6 @@ if __name__ == '__main__':
         ConfP.read(cfg)
         Extra+=GenSpecificParser(ConfP,cfg,typename='ValueType')
     LockedConf=GenConfigLookupMap(typename='ValueType')
-    printFilesGeneratedOutput(Common+Extra+LockedConf)
+    printFilesGeneratedOutput(Common+Extra+LockedConf,basedir=os.path.join(bdir,'ConfigCode'))
     #printFilesGeneratedOutput(Common+Extra+LockedConf,stream=sys.stdout)
         
