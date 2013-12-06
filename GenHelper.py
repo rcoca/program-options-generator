@@ -1,13 +1,21 @@
 #razvan.coca@gmail.com
 import re
 from collections import OrderedDict
-import sys
+import sys,os
 
 class FileBody:
     def __init__(self,filename):
+        def getFile(filename):
+            with open(filename,'r') as f:
+                snippet=f.read()
+            return snippet
         self.snippet=""
-        with open(filename,'r') as f:
-            self.snippet=f.read()
+        try:
+            self.snippet=getFile(filename)
+        except IOError,e:
+            newfilename=os.path.join(os.path.dirname(__file__),filename)
+            print "rerouting path to %s"%newfilename
+            self.snippet=getFile(newfilename)
     def __call__(self,*args):
         return self.snippet%args
 
@@ -78,7 +86,7 @@ class ClassHolder:
         return " ".join(code)
 
     def headerBody(self,inline=False):
-        headerdefine=self.headerName().replace('.','_').upper()
+        headerdefine=self.headerName().replace('.','_')
         doubleinclude="#ifndef %s\n#define %s\n%%s\n#endif /*#ifdef %s*/"%((headerdefine,)*3)
         inheritDecl='' if len(self.inheritsfrom)==0 else ":"+", ".join(self.inheritsfrom)
         code=[""]
@@ -154,7 +162,7 @@ class FuncCollectionHolder:
                              'args':margs,'body':body,'template':template_def}
         
     def headerBody(self,inline=False):
-        headerdefine=self.headerName().replace('.','_').upper()
+        headerdefine=self.headerName().replace('.','_')
         doubleinclude="#ifndef %s\n#define %s\n%%s\n#endif /*#ifdef %s*/"%((headerdefine,)*3)
 
         code=["\n"]
@@ -195,7 +203,7 @@ class FuncCollectionHolder:
         return code
         
     def headerBody(self,inline=False):
-        headerdefine=self.headerName().replace('.','_').upper()
+        headerdefine=self.headerName().replace('.','_')
         doubleinclude="#ifndef %s\n#define %s\n%%s\n#endif /*#ifdef %s*/"%((headerdefine,)*3)
 
         code=[""]
@@ -248,6 +256,65 @@ class ForwardDeclsHolder:
         return None
 
     def headerBody(self,inline=False):
-        headerdefine=self.headerName().replace('.','_').upper()
+        headerdefine=self.headerName().replace('.','_')
         doubleinclude="#ifndef %s\n#define %s\n %%s\n#endif /*#ifdef %s*/"%((headerdefine,)*3)
         return doubleinclude%self.Body()
+
+def GenerateDotNode(Class):
+    for accesstype in ['public']:
+        pmethods=filter(lambda x:Class.methods[x]['access']==accesstype,Class.methods)
+        ptemplates=filter(lambda x:Class.template_methods[x]['access']==accesstype,Class.template_methods)
+
+    dmethods=["+%s()"%Class.methods[m]['name'] for m in pmethods]
+    tmethods=["+%s<%s>()"%(Class.template_methods[m]['name'],",".join(Class.template_methods[m]['params'])) for m in ptemplates]
+    return "%s[%s];"%(Class.name,'shape=record,label="'+('{%s||%s|%s}"'%(Class.name,"|".join(dmethods),"|".join(tmethods))))
+
+def GenerateDotEdgeList(List):
+    edges=[""]
+    for s in List:
+        for i in s.inheritsfrom:
+            true_i=i.replace('virtual','').replace('public','').strip()
+            e='"%s"->"%s"[arrowhead=empty];'%(s.name,true_i)
+            if not e in edges:
+                edges += [e]
+    for s in List:
+        smembers=map(lambda x:x['type'],s.datamembers.values())
+        for d in List:
+            dmembers=map(lambda x:x['type'],d.datamembers.values())
+            for dm in dmembers:
+                flags=map(lambda x:re.search(x,dm),
+                          ['bool','int','std::string','using', 'typedef','unsigned','enum','boost::function','boost::asio','boost::posix_time'])
+                if any(flags):continue
+                flags=map(lambda x:re.search(x,s.name),
+                          ['bool','int','std::string','using', 'typedef','unsigned','enum','boost::function','boost::asio','boost::posix_time'])
+                if any(flags):continue
+                if dm in smembers:
+                    e=['"%s"->"%s"[arrowhead=diamond];'%(dm,s.name)]
+                elif ("boost::shared_ptr<%s>"%dm) in smembers:
+                    e=['"%s"->"%s"[arrowhead=diamond,color=grey];'%(dm,s.name)]
+                if not e in edges:edges+=e
+                
+    return ("\n"+4*' ').join(edges)
+
+def GenerateDotFromClassList(List):
+    graph="""
+digraph G{
+        rankdir = BT;
+        fontname = "Bitstream Vera Sans"
+        fontsize = 8
+        //nodesep= 0.6
+        splines=ortho
+        node [fontname = "Bitstream Vera Sans",fontsize = 8,color="#BBBBBB",fillcolor="#8DAAEA",
+             style=filled,shape=record];
+        edge [fontname = "Bitstream Vera Sans",fontsize = 10 ];
+        %s
+        %s
+}
+"""
+    dClasses=[]
+    for Class in List:
+        dClasses+=[GenerateDotNode(Class)]
+    dEdges=GenerateDotEdgeList(List)
+    dot_string=graph%("\n    ".join(dClasses),dEdges)
+    return dot_string
+
