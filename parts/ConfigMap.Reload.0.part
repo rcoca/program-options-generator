@@ -20,3 +20,4 @@
     {
         std::cerr<<"Unknown Error["<<FileName<<"]"<<std::endl;
     }
+    return false;

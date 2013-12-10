@@ -20,3 +20,4 @@
         {
             std::cerr<<"Unknown Error["<<xConfigFile<<"]"<<std::endl;
         }
+        return false;

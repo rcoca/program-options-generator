@@ -27,7 +27,7 @@ class ClassHolder:
     source file includes the header file. support for separate source file includes
     """
     def __init__(self,name,inherits=[],includes=[],
-                 classtype='class',template_class='',srcincludes=[],typedefs=[]):
+                 classtype='class',template_class='',srcincludes=[],typedefs=[],namespaces=[]):
         self.name=name #string
 
         self.inheritsfrom=inherits #list of inheritances
@@ -39,6 +39,7 @@ class ClassHolder:
         self.template_class=template_class
         self.srcincludes=srcincludes
         self.typedefs=typedefs
+        self.namespaces=namespaces
     def add_member(self,mtype,mname,access='public'):
         self.datamembers[mname]={'type':mtype,'access':access,'name':mname}
     def add_method(self,mtype,mname,margs=[],access='public',modifier='',body=None,initializers=None):
@@ -66,10 +67,11 @@ class ClassHolder:
         if inline and self.methods[m]['body']!=None and self.methods[m]['body']!=0:
             insertBody="{%s}"%self.methods[m]['body']
         elif self.methods[m]['body']==0:
-            insertBody="    = 0"
+            insertBody="    = 0;"
         else: 
             insertBody=""
-        return "    "+("%s%s%s(%s)%s %s;\n"%(self.methods[m]['modifier']+' ',
+        insertBody=";" if len(insertBody)==0 else insertBody
+        return "    "+("%s%s%s(%s)%s %s\n"%(self.methods[m]['modifier']+' ',
                                            self.methods[m]['type']+' ',
                                            self.methods[m]['name']+' ',
                                            ", ".join(self.methods[m]['args']),
@@ -82,11 +84,12 @@ class ClassHolder:
         code += ["    %s %s(%s)"%(self.template_methods[m]['type'],
                                      self.template_methods[m]['name'],
                                      ", ".join(self.template_methods[m]['args']))]
-        code += ["{%s};\n"%self.template_methods[m]['body']]
+        code += ["{%s}\n"%self.template_methods[m]['body']]
         return " ".join(code)
 
     def headerBody(self,inline=False):
         headerdefine=self.headerName().replace('.','_')
+        
         doubleinclude="#ifndef %s\n#define %s\n%%s\n#endif /*#ifdef %s*/"%((headerdefine,)*3)
         inheritDecl='' if len(self.inheritsfrom)==0 else ":"+", ".join(self.inheritsfrom)
         code=[""]

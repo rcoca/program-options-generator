@@ -4,7 +4,10 @@ import os,glob,re
 import ast
 import os, shutil
 import sys
-sys.path.append('.')
+WD=os.getenv('PWD')
+os.chdir(WD)
+sys.path.append(os.getcwd())
+
 from SectionlessConfigParser import SectionlessConfigParser
 
 from GenHelper import *
@@ -345,10 +348,10 @@ def GenConfigLookupMap(typename='ValueType'):
     Class=ClassHolder('ConfigMap',includes=includes)
     Class.add_method('','~ConfigMap',modifier='virtual',body='')
     Class.add_member('boost::mutex','m_mutex',access='private')
-    Class.add_member('boost::shared_ptr<%sMap > '%typename,'m_map',access='private')
-    Class.add_member('std::string','FileName',access='private')
+    Class.add_member('std::string','FileName',access='private')    
     Class.add_member('int','m_argc',access='private')
     Class.add_member('char **','m_argv',access='private')
+    Class.add_member('boost::shared_ptr<%sMap > '%typename,'m_map',access='private')
     Class.add_member('boost::shared_ptr<OptionsParser>',' OptParser',access='private')
 
     Class.add_method('','ConfigMap',access='private')    
@@ -388,6 +391,7 @@ def GenConfigLookupMap(typename='ValueType'):
 def writeClassToPath(Class,basedir='.',stream=None):
     if Class.__dict__.has_key('template_class') and  len(Class.template_class):inline=True
     else:inline=False
+    #print basedir,Class.headerName()
     if stream==None:
         text=Class.headerBody(inline=inline)
         if text!=None and len(text.strip()):
@@ -402,15 +406,17 @@ def writeClassToPath(Class,basedir='.',stream=None):
         if Class.sourceBody(inline=inline)!=None:
             print Class.sourceBody()
 
-def printFilesGeneratedOutput(Items,basedir='Code',stream=None):
+def printFilesGeneratedOutput(Items,basedir='Code',stream=None,cleanup=True):
     if stream==None:
+        if cleanup:
+            try:
+                shutil.rmtree(basedir)
+            except:pass
         try:
-            shutil.rmtree(basedir)
-        except:pass
-        try:
-            os.mkdir(basedir)
+                os.makedirs(basedir)
         except:pass
     for Item in Items:
+        #print "item:%s"%Item.name
         writeClassToPath(Item,basedir=basedir,stream=stream)
 
 
@@ -427,6 +433,11 @@ if __name__ == '__main__':
         ConfP.read(cfg)
         Extra+=GenSpecificParser(ConfP,cfg,typename='ValueType')
     LockedConf=GenConfigLookupMap(typename='ValueType')
-    printFilesGeneratedOutput(Common+Extra+LockedConf,basedir=os.path.join(bdir,'ConfigCode'))
+    #printFilesGeneratedOutput(Common+Extra+LockedConf,basedir=os.path.join(bdir,'ConfigCode'))
+    printFilesGeneratedOutput(Common,basedir=os.path.join(bdir,'ConfigCode/common/config'),cleanup=True)
+    printFilesGeneratedOutput(LockedConf,basedir=os.path.join(bdir,'ConfigCode/common/config'),cleanup=False)
+    for C in Extra:
+        printFilesGeneratedOutput([C],basedir=os.path.join(bdir,'ConfigCode/%s'%(C.name.replace('.config',''))),
+                                  cleanup=False)
     #printFilesGeneratedOutput(Common+Extra+LockedConf,stream=sys.stdout)
         
