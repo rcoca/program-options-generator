@@ -425,7 +425,7 @@ if __name__ == '__main__':
     else: bdir='.'
     Common=GenTypesAndValidators()
     Extra=[]
-    for cfg in RecurseFindConfigs(bdir,'.*\.config$'):
+    for cfg in RecurseFindConfigs(bdir,'.*\.ini$'):
         print "\nFound:\t%s\n"%cfg
         #ConfP=ConfigParser.ConfigParser()
         ConfP=SectionlessConfigParser()
@@ -437,7 +437,7 @@ if __name__ == '__main__':
     printFilesGeneratedOutput(Common,basedir=os.path.join(bdir,'ConfigCode/common/config'),cleanup=True)
     printFilesGeneratedOutput(LockedConf,basedir=os.path.join(bdir,'ConfigCode/common/config'),cleanup=False)
     for C in Extra:
-        printFilesGeneratedOutput([C],basedir=os.path.join(bdir,'ConfigCode/%s'%(C.name.replace('.config',''))),
+        printFilesGeneratedOutput([C],basedir=os.path.join(bdir,'ConfigCode/%s'%(C.name.replace('.ini',''))),
                                   cleanup=False)
     #printFilesGeneratedOutput(Common+Extra+LockedConf,stream=sys.stdout)
         

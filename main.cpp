@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
     {
 
         //ConfigMap MyConfigMap(new NodeOptions(),"node.config",argc,argv);
-        ConfigMap MyConfigMap(new SimpleOptions(),"simple.config",argc,argv);
+        ConfigMap MyConfigMap(new SimpleOptions(),"../simple.ini",argc,argv);
         std::cerr<<"Map Size:"<<MyConfigMap.size()<<std::endl;
 
         try
