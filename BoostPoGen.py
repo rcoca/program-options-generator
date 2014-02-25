@@ -46,10 +46,10 @@ def guessKeyType(text):
         ('^\s*[0-9]+\.[0-9]+','float'),
         ('^((ftp://|http://|https://|file://).*\s*,)+\s*((ftp://|http://|https://|file://).*)$','url_list'),
         ('^(ftp://|http://|https://|file://).*$','url_string'),
-        ('^/[A-z0-9/ \-\.,]+$','path_list'),
+        ('^/([A-z0-9/ \-\.]+\s*,\s*)[A-z0-9/ \-\.]+$','path_list'),
         ('^[Tt]rue|[Ff]alse','bool'),
         ('^\s*[0-9]+\s*$','int'),
-        ('^[A-z0-9]+.*','string')
+        ('^[A-z0-9/]+.*','string')
         ]
     
     for k,v in Types:
@@ -322,7 +322,7 @@ def GenSpecificParser(ParsedConf,cfg,typename='ValueType'):
             computed_type=STypesDict[val_type][0]
             computed_key=comp_key(section,option,nosect=nosection)
             computed_name=comp_name(section,option,nosect=nosection)
-            code += ['if(vars_map.count("%s"))pVM->insert(std::make_pair("%s", %s(%s)));'%(computed_key,computed_key,typename,computed_name)]
+            code += ['if(vars_map["%s"].defaulted()||vars_map.count("%s"))pVM->insert(std::make_pair("%s", %s(%s)));'%(computed_key,computed_key,computed_key,typename,computed_name)]
     code += ['if(vars_map.count("debug"))pVM->insert(std::make_pair("debug",%s(1)));'%typename]
     code += ['else pVM->insert(std::make_pair("debug",%s(0)));'%typename]
     code += ['return true;']
