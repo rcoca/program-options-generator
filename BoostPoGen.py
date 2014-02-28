@@ -83,6 +83,7 @@ def GenTypesAndValidators(typename="ValueType"):
     C.add_member('std::vector<std::string>','paths')
     Classes.append(C)
     C=ClassHolder('endpoint',classtype='struct',includes=['#include <string>'])
+
     C.add_member('std::string','address')
     C.add_member('unsigned short', 'port')
     Classes.append(C)
@@ -285,11 +286,11 @@ def GenSpecificParser(ParsedConf,cfg,typename='ValueType'):
             computed_name=comp_name(section,option,nosect=nosection)
             #extra_options=["->%s()"%k for k in STypesDict[val_type][1:]]
             option_type=filter(lambda x:x!='optional',option_type)
-            extra_options=["->%s()"%k for k in option_type]
+            extra_options=["->%s%s"%(k,"" if '(' in k else "()") for k in option_type]
             extra_options="".join(extra_options)
             
             computed_kw=comp_key(section,option,nosect=nosection)
-            computed_help="%s %s: %s (ex:%s)"%("" if nosection else section,option,val_type,ParsedConf.get(section,option))
+            computed_help="%s %s: %s (ex:%s)"%("" if nosection else section,option,val_type,re.sub("#.*$","",ParsedConf.get(section,option)))
             code += [field_template%(computed_kw,computed_type,computed_name,extra_options,computed_help.lstrip())]
             #it could recognize the default section syntax, too, but looks ugly in the help text 
             #if nosection:
@@ -325,6 +326,10 @@ def GenSpecificParser(ParsedConf,cfg,typename='ValueType'):
             code += ['if(vars_map["%s"].defaulted()||vars_map.count("%s"))pVM->insert(std::make_pair("%s", %s(%s)));'%(computed_key,computed_key,computed_key,typename,computed_name)]
     code += ['if(vars_map.count("debug"))pVM->insert(std::make_pair("debug",%s(1)));'%typename]
     code += ['else pVM->insert(std::make_pair("debug",%s(0)));'%typename]
+    code += ['if(vars_map.count("help"))pVM->insert(std::make_pair("help",%s(1)));'%typename]
+    code += ['else pVM->insert(std::make_pair("help",%s(0)));'%typename]
+    
+
     code += ['return true;']
     
     Body=("\n"+4*' ').join(code)
