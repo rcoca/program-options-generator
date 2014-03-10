@@ -27,8 +27,8 @@ STypesDict={'ip_port'              : ('endpoint','required'),
             'url_list'             : ('url_list','multitoken','required'),
             'url'                  : ('url_string','required'),
             'floats'               : ('vector_double','multitoken','required'),
-            'string'               : ('std::string','required'),
             'int'                  : ('int','required'),
+            'string'               : ('std::string','required'),
             'float'                : ('double','required'),
             'bool'                 : ('bool','required'),
             }
@@ -39,17 +39,17 @@ def TypeList():
 
 def guessKeyType(text):
     Types=[
-        ('([0-9]{1,}\.){3,}[0-9]{1,}[\-:/]\s*[0-9]+\s*,\s*','ip_port_list'),
-        ('([0-9]{1,}\.){3,}[0-9]{1,}\s*[\-:/]\s*[0-9]+','ip_port'),
-        ('^[A-z\-\.0-9]+[\-:/]\s*[0-9]+$','host_port'),
+        ('\s*([0-9]{1,}\.){3,}[0-9]{1,}[\-:/]\s*[0-9]+\s*,\s*','ip_port_list'),
+        ('\s*([0-9]{1,}\.){3,}[0-9]{1,}\s*[\-:/]\s*[0-9]+','ip_port'),
+        ('^\s*[A-z\-\.0-9]+[\-:/]\s*[0-9]+$','host_port'),
         ('^\s*([0-9]+\.[0-9]+\s*,\s*)+[0-9]+\.[0-9]+','floats'),
         ('^\s*[0-9]+\.[0-9]+','float'),
-        ('^((ftp://|http://|https://|file://).*\s*,)+\s*((ftp://|http://|https://|file://).*)$','url_list'),
-        ('^(ftp://|http://|https://|file://).*$','url_string'),
-        ('^/([A-z0-9/ \-\.]+\s*,\s*)[A-z0-9/ \-\.]+$','path_list'),
-        ('^[Tt]rue|[Ff]alse','bool'),
         ('^\s*[0-9]+\s*$','int'),
-        ('^[A-z0-9/]+.*','string')
+        ('^\s*((ftp://|http://|https://|file://).*\s*,)+\s*((ftp://|http://|https://|file://).*)$','url_list'),        
+        ('^\s*(ftp://|http://|https://|file://).*$','url_string'),
+        ('^\s*/([A-z0-9/ \-\.]+\s*,\s*)[A-z0-9/ \-\.]+$','path_list'),
+        ('^\s*[Tt]rue|[Ff]alse','bool'),
+        ('^\s*[A-z0-9/]+.*','string')
         ]
     
     for k,v in Types:
