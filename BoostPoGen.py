@@ -379,6 +379,11 @@ def GenConfigLookupMap(typename='ValueType'):
     Class.add_method('std::pair<%sMap::iterator,bool>'%typename,'insert',
                      margs=['std::pair<std::string,%s> val'%typename],
                      body=FileBody('parts/ConfigMap.insert.part')())
+    Class.add_method('void','set',margs=['const char* key,%s const& v'%typename],
+                     body="""    boost::mutex::scoped_lock lock(m_mutex);
+m_map->erase(key);
+m_map->insert(std::make_pair(std::string(key),v));""")
+
     Class.add_method('size_t','erase',margs=['std::string const & key'],
                      body=FileBody('parts/ConfigMap.erase.part')())
     Class.add_method('size_t','size',body='    boost::mutex::scoped_lock lock(m_mutex);\nreturn m_map->size();')
