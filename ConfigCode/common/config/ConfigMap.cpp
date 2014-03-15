@@ -1,3 +1,13 @@
+//
+//  ConfigMap.cpp
+// ~~~~~~~~~~~~~~~~~~~~~
+//
+// Copyright (c) 2013-2014 Razvan Coca (razvan dot coca at  gmail dot com)
+// This is generated code, no need to edit. The translator is distributed under GPL.
+// 
+//
+
+
 
 #include "ConfigMap.hpp"
 
@@ -103,6 +113,12 @@ ValueType ConfigMap::operator [](std::string const & key)
         ValueTypeMap::const_iterator i=m_map->find(key);
         if(i!=m_map->end())return i->second;
         throw std::runtime_error(std::string("key:")+key+" not found");
+}
+void ConfigMap::set(const char* key,ValueType const& v)
+{
+    boost::mutex::scoped_lock lock(m_mutex);
+    m_map->erase(key);
+    m_map->insert(std::make_pair(std::string(key),v));
 }
 size_t ConfigMap::size()
 {

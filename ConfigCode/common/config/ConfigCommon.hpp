@@ -1,3 +1,13 @@
+//
+//  ConfigCommon.hpp
+// ~~~~~~~~~~~~~~~~~~~~~
+//
+// Copyright (c) 2013-2014 Razvan Coca (razvan dot coca at  gmail dot com)
+// This is generated code, no need to edit. The translator is distributed under GPL.
+// 
+//
+
+
 #ifndef ConfigCommon_hpp
 #define ConfigCommon_hpp
  
