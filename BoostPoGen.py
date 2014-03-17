@@ -239,9 +239,13 @@ def GenAccessClass(typename,typelist):
                          body='    os<<T.m_data;\nreturn os;\n')
     return Class
 
+def remove_short(option):
+    return option.split(',')[0].strip()
+
 def comp_name(section,option,nosect=False):
-    if nosect:return option
-    return "_".join([section,option])
+    if nosect:return remove_short(option)
+    return "_".join([section,remove_short(option)])
+
 def comp_key(section,option,nosect=False):
     if nosect:return option
     return ".".join([section,option])
@@ -321,7 +325,7 @@ def GenSpecificParser(ParsedConf,cfg,typename='ValueType'):
             val_type,option_type=guessKeyType(ParsedConf.get(section,option))
             #print section,option,val_type
             computed_type=STypesDict[val_type][0]
-            computed_key=comp_key(section,option,nosect=nosection)
+            computed_key=comp_key(section,remove_short(option),nosect=nosection)
             computed_name=comp_name(section,option,nosect=nosection)
             code += ['if(vars_map["%s"].defaulted()||vars_map.count("%s"))pVM->insert(std::make_pair("%s", %s(%s)));'%(computed_key,computed_key,computed_key,typename,computed_name)]
     code += ['if(vars_map.count("debug"))pVM->insert(std::make_pair("debug",%s(1)));'%typename]
