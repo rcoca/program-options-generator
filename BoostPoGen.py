@@ -192,7 +192,8 @@ def GenInterfaceParser(typename="ValueType"):
     Classes=[]
     
     Class=ClassHolder('OptionsParser',classtype='class',includes=[
-            '#include <map>','#include <string>',
+            '#include <string>',
+            '#include <map>',
             '#include <iostream>','#include <vector>',
             '#include <boost/variant.hpp>',
             '#include <boost/shared_ptr.hpp>',
@@ -225,7 +226,7 @@ def GenAccessClass(typename,typelist):
                                       ])
     
     Class.add_member("boost::variant<%s >"%(", ".join(TypeList())),'m_data',access='private')
-    Class.add_method('',typename,access='private')
+    Class.add_method('',typename,access='public')
     Class.add_method('','~%s'%typename,modifier='virtual',body='')
     for Type in typelist:
         short_type=Type.replace("std::","").replace('<','_').replace('>','')
@@ -363,7 +364,7 @@ def GenConfigLookupMap(typename='ValueType'):
     Class.add_member('boost::shared_ptr<%sMap > '%typename,'m_map',access='private')
     Class.add_member('boost::shared_ptr<OptionsParser>',' OptParser',access='private')
 
-    Class.add_method('','ConfigMap',access='private')    
+    Class.add_method('','ConfigMap',access='public')    
     Class.add_method('','ConfigMap',margs=['OptionsParser *Parser',
                                            'const char *xConfigFile',
                                            'int argc','char *argv[]'],
