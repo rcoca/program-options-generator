@@ -49,7 +49,7 @@ def guessKeyType(text):
         ('^\s*(ftp://|http://|https://|file://).*$','url_string'),
         ('^\s*/([A-z0-9/ \-\.]+\s*,\s*)[A-z0-9/ \-\.]+$','path_list'),
         ('^\s*[Tt]rue|[Ff]alse','bool'),
-        ('^\s*[A-z0-9/]+.*','string')
+        ('^\s*[A-z0-9/\.\-]+.*','string')
         ]
     
     for k,v in Types:
@@ -83,7 +83,8 @@ def GenTypesAndValidators(typename="ValueType"):
     C.add_member('std::vector<std::string>','paths')
     Classes.append(C)
     C=ClassHolder('endpoint',classtype='struct',includes=['#include <string>'])
-
+    C.add_method('','endpoint',margs=['std::string const& host','unsigned short port_'],initializers=['address(host)','port(port_)'],body='')
+    C.add_method('','endpoint',margs=[],initializers=[],body='')
     C.add_member('std::string','address')
     C.add_member('unsigned short', 'port')
     Classes.append(C)
