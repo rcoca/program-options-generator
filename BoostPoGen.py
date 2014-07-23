@@ -81,6 +81,9 @@ def GenTypesAndValidators(typename="ValueType"):
     Classes=[]
     C=ClassHolder('path_list',classtype='struct',includes=['#include <vector>','#include <string>'])
     C.add_member('std::vector<std::string>','paths')
+    C.add_method('','path_list',margs=['std::vector<std::string> const& pts'],initializers=['paths(pts)'],body='')
+    C.add_method('','path_list',margs=[],initializers=[],body='')
+
     Classes.append(C)
     C=ClassHolder('endpoint',classtype='struct',includes=['#include <string>'])
     C.add_method('','endpoint',margs=['std::string const& host','unsigned short port_'],initializers=['address(host)','port(port_)'],body='')
@@ -88,6 +91,7 @@ def GenTypesAndValidators(typename="ValueType"):
     C.add_member('std::string','address')
     C.add_member('unsigned short', 'port')
     Classes.append(C)
+    
     C=ClassHolder('endpoint_list',classtype='struct',includes=['#include <string>','#include <vector>',
                                                                '#include "endpoint.hpp"'])
     C.add_member('std::vector<endpoint>', 'endpoints')
@@ -97,14 +101,21 @@ def GenTypesAndValidators(typename="ValueType"):
     C.add_member('std::string','protocol')
     C.add_member('std::string','host')
     C.add_member('std::string', 'path')
+    C.add_method('','url_string',margs=['std::string const& proto','std::string const& host_','std::string const&  path_'],initializers=['protocol(proto)','host(host_)','path(path_)'],body='')
+    C.add_method('','url_string',margs=[],initializers=[],body='')
     Classes.append(C)
 
-    C=ClassHolder('url_list',classtype='struct',includes=['#include <string>'])
+    C=ClassHolder('url_list',classtype='struct',includes=['#include <string>','#include <vector>','#include "url_string.hpp"'])
     C.add_member('std::vector<url_string>', 'list')
+    C.add_method('','url_list',margs=['std::vector<url_string> const& urls'],initializers=['list(urls)'],body='')
+    C.add_method('','url_list',margs=[],initializers=[],body='')
+
     Classes.append(C)
     
 
     C=ClassHolder('vector_double',classtype='struct',includes=['#include <string>','#include <vector>'])
+    C.add_method('','vector_double',margs=['std::vector<double> const& data'],initializers=['values(data)'],body='')
+    C.add_method('','vector_double',margs=[],initializers=[],body='')
     C.add_member('std::vector<double>', 'values')
     Classes.append(C)
 
