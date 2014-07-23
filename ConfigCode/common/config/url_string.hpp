@@ -1,13 +1,3 @@
-//
-//  url_string.hpp
-// ~~~~~~~~~~~~~~~~~~~~~
-//
-// Copyright (c) 2013-2014 Razvan Coca (razvan dot coca at  gmail dot com)
-// This is generated code, no need to edit. The translator is distributed under GPL.
-// 
-//
-
-
 #ifndef url_string_hpp
 #define url_string_hpp
 #include <string>
@@ -23,6 +13,10 @@ public:
     std::string host;
 
     std::string path;
+
+    url_string () ;
+
+    url_string (std::string const& proto, std::string const& host_, std::string const&  path_) ;
 };
 
 #endif /*#ifdef url_string_hpp*/

@@ -1,13 +1,3 @@
-//
-//  ValueType.hpp
-// ~~~~~~~~~~~~~~~~~~~~~
-//
-// Copyright (c) 2013-2014 Razvan Coca (razvan dot coca at  gmail dot com)
-// This is generated code, no need to edit. The translator is distributed under GPL.
-// 
-//
-
-
 #ifndef ValueType_hpp
 #define ValueType_hpp
 #include <string>
@@ -28,9 +18,9 @@ class ValueType
 private:
     boost::variant<bool, double, endpoint, endpoint_list, int, path_list, std::string, url_list, url_string, vector_double > m_data;
 
+public:
     ValueType () ;
 
-public:
     ValueType (bool const & val_bool) ;
 
     ValueType (double const & val_double) ;

@@ -1,13 +1,3 @@
-//
-//  SimpleOptions.cpp
-// ~~~~~~~~~~~~~~~~~~~~~
-//
-// Copyright (c) 2013-2014 Razvan Coca (razvan dot coca at  gmail dot com)
-// This is generated code, no need to edit. The translator is distributed under GPL.
-// 
-//
-
-
 
 #include "SimpleOptions.hpp"
 
@@ -26,10 +16,10 @@ bool SimpleOptions::Parse(std::string const& ConfigName,int argc,char *argv[],bo
         description.add_options()
         ("help", "help message")
         ("debug","debug run")
-        ("DataDir",boost::program_options::value< std::string >(&DataDir) ->required(),"DataDir: string (ex:/data/)")
-        ("Generations",boost::program_options::value< vector_double >(&Generations) ->multitoken(),"Generations: floats (ex:50.2,100.0 )")
+        ("DataDir,d",boost::program_options::value< std::string >(&DataDir) ->required(),"DataDir,d: string (ex:/data/)")
+        ("Generations,g",boost::program_options::value< vector_double >(&Generations) ->multitoken(),"Generations,g: floats (ex:50.2,100.0 )")
         ("InitialTemperature",boost::program_options::value< double >(&InitialTemperature) ,"InitialTemperature: float (ex:120.0 )")
-        ("PopulationSize",boost::program_options::value< int >(&PopulationSize) ->required(),"PopulationSize: int (ex:3500 )")
+        ("PopulationSize,p",boost::program_options::value< int >(&PopulationSize) ->required(),"PopulationSize,p: int (ex:3500 )")
         ("Nodes",boost::program_options::value< endpoint_list >(&Nodes) ->multitoken()->required(),"Nodes: ip_port_list (ex:192.168.1.3:4900, 192.168.1.4:4900)")
         ("MasterNode",boost::program_options::value< endpoint >(&MasterNode) ->required(),"MasterNode: ip_port (ex:192.168.1.110:4900)")
         ("certificates",boost::program_options::value< url_list >(&certificates) ->multitoken()->required(),"certificates: url_list (ex:http://node.host.net:44434/cert.pem, ftp://node.host.com/cert1.pem)")
