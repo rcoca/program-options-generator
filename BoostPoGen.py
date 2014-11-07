@@ -389,9 +389,9 @@ def GenConfigLookupMap(typename='ValueType'):
     Class.add_method('bool', 'ReloadConfig',margs=['std::string const &xConfigFile'],
                      body=FileBody('parts/ConfigMap.Reload.1.part')(typename,typename))
 
-    Class.add_method(typename,'operator []',margs=['std::string const & key'],
+    Class.add_method(typename,'operator []',margs=['std::string const & key'],qualifier="const",
                      body=FileBody('parts/ConfigMap.get.part')(typename))
-    Class.add_method(typename,'operator []',margs=['const char* key'],
+    Class.add_method(typename,'operator []',margs=['const char* key'],qualifier="const",
                      body='    return (*this)[std::string(key)];')
     Class.add_method('std::pair<%sMap::iterator,bool>'%typename,'insert',
                      margs=['std::pair<std::string,%s> val'%typename],
