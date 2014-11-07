@@ -14,7 +14,7 @@ class FileBody:
             self.snippet=getFile(filename)
         except IOError,e:
             newfilename=os.path.join(os.path.dirname(__file__),filename)
-            print "rerouting path to %s"%newfilename
+            #print "rerouting path to %s"%newfilename
             self.snippet=getFile(newfilename)
     def __call__(self,*args):
         return self.snippet%args
@@ -27,7 +27,7 @@ class ClassHolder:
     source file includes the header file. support for separate source file includes
     """
     def __init__(self,name,inherits=[],includes=[],
-                 classtype='class',template_class='',srcincludes=[],typedefs=[],namespaces=[]):
+                 classtype='class',template_class='',srcincludes=[],typedefs=[]):
         self.name=name #string
 
         self.inheritsfrom=inherits #list of inheritances
@@ -39,14 +39,13 @@ class ClassHolder:
         self.template_class=template_class
         self.srcincludes=srcincludes
         self.typedefs=typedefs
-        self.namespaces=namespaces
     def add_member(self,mtype,mname,access='public'):
         self.datamembers[mname]={'type':mtype,'access':access,'name':mname}
-    def add_method(self,mtype,mname,margs=[],access='public',modifier='',body=None,initializers=None):
+    def add_method(self,mtype,mname,margs=[],access='public',modifier='',body=None,initializers=None,qualifier=None):
         k='%s.%s'%(mname,".".join(margs))
         self.methods[k]={'type':mtype,'name':mname,'modifier':modifier,
                              'args':margs,'access':access,'body':body,
-                             'ilist':initializers}
+                             'ilist':initializers,'qualifier':qualifier}
     def add_templated_method(self,mtemplate_params,mtype,mname,margs=[],access='public',modifier='',body='{};'):
         k="%s.%s.%s"%(".".join(mtemplate_params),mname,".".join(margs))
         self.template_methods[k]={'params':mtemplate_params,'name':mname,
@@ -63,15 +62,14 @@ class ClassHolder:
         if self.methods[m]['ilist'] and inline:
             initializers=":    "+", ".join(self.methods[m]['ilist'])
         else:
-            initializers=''
+            initializers=' '+(self.methods[m]['qualifier'] if self.methods[m]['qualifier'] else '')
         if inline and self.methods[m]['body']!=None and self.methods[m]['body']!=0:
             insertBody="{%s}"%self.methods[m]['body']
         elif self.methods[m]['body']==0:
-            insertBody="    = 0;"
+            insertBody="    = 0"
         else: 
             insertBody=""
-        insertBody=";" if len(insertBody)==0 else insertBody
-        return "    "+("%s%s%s(%s)%s %s\n"%(self.methods[m]['modifier']+' ',
+        return "    "+("%s%s%s(%s)%s  %s;\n"%(self.methods[m]['modifier']+' ',
                                            self.methods[m]['type']+' ',
                                            self.methods[m]['name']+' ',
                                            ", ".join(self.methods[m]['args']),
@@ -84,12 +82,11 @@ class ClassHolder:
         code += ["    %s %s(%s)"%(self.template_methods[m]['type'],
                                      self.template_methods[m]['name'],
                                      ", ".join(self.template_methods[m]['args']))]
-        code += ["{%s}\n"%self.template_methods[m]['body']]
+        code += ["{%s};\n"%self.template_methods[m]['body']]
         return " ".join(code)
 
     def headerBody(self,inline=False):
         headerdefine=self.headerName().replace('.','_')
-        
         doubleinclude="#ifndef %s\n#define %s\n%%s\n#endif /*#ifdef %s*/"%((headerdefine,)*3)
         inheritDecl='' if len(self.inheritsfrom)==0 else ":"+", ".join(self.inheritsfrom)
         code=[""]
@@ -124,7 +121,8 @@ class ClassHolder:
                 if self.methods[method]['ilist']:
                     initializers=":"+", ".join(self.methods[method]['ilist'])
                 else:
-                    initializers=''
+                    initializers=' '+(self.methods[method]['qualifier'] if self.methods[method]['qualifier'] else '')
+                    #initializers=''
                 args=map(lambda x:re.sub('=.*$','',x),self.methods[method]['args'])
                 #args=map(lambda x:re.sub('=.*[,\)]','',x),self.methods[method]['args'])
                 if self.methods[method]['modifier']!='friend':
