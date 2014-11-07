@@ -2,6 +2,7 @@
 #include "RequiredOptions.hpp"
 
 bool RequiredOptions::Parse(std::string const& ConfigName,int argc,char *argv[],boost::shared_ptr<ValueTypeMap> pVM)
+     
 {
 
         boost::program_options::options_description description("Required options");

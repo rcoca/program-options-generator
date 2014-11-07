@@ -2,6 +2,7 @@
 #include "vector_double.hpp"
 
 vector_double::vector_double()
+     
 {
 
 }

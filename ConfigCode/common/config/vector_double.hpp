@@ -11,9 +11,9 @@ struct vector_double
 public:
     std::vector<double> values;
 
-    vector_double () ;
+    vector_double ()   ;
 
-    vector_double (std::vector<double> const& data) ;
+    vector_double (std::vector<double> const& data)   ;
 };
 
 #endif /*#ifdef vector_double_hpp*/

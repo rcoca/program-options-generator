@@ -9,6 +9,7 @@ ConfigMap::ConfigMap(OptionsParser *Parser,const char *xConfigFile,int argc,char
         OptParser->Parse(xConfigFile,argc,argv,m_map);
 }
 bool ConfigMap::ReloadConfig()
+     
 {
 
         try
@@ -35,6 +36,7 @@ bool ConfigMap::ReloadConfig()
         return false;
 }
 bool ConfigMap::ReloadConfig(std::string const &xConfigFile)
+     
 {
 
             try{
@@ -61,30 +63,36 @@ bool ConfigMap::ReloadConfig(std::string const &xConfigFile)
             return false;
 }
 ConfigMap::iterator ConfigMap::begin()
+     
 {
    return m_map->begin();
 }
 ConfigMap::iterator ConfigMap::end()
+     
 {
     return m_map->end();
 }
 size_t ConfigMap::erase(std::string const & key)
+     
 {
 
         boost::mutex::scoped_lock lock(m_mutex);
         return m_map->erase(key);
 }
 boost::mutex & ConfigMap::getLock()
+     
 {
     return m_mutex;
 }
 std::pair<ValueTypeMap::iterator,bool> ConfigMap::insert(std::pair<std::string,ValueType> val)
+     
 {
 
         boost::mutex::scoped_lock lock(m_mutex);
         return m_map->insert(val);
 }
 std::ostream & operator <<(std::ostream& os,ConfigMap & cmap)
+     
 {
 
         boost::mutex::scoped_lock lock(cmap.m_mutex);
@@ -93,29 +101,34 @@ std::ostream & operator <<(std::ostream& os,ConfigMap & cmap)
         return os;
 }
 ValueType ConfigMap::operator [](const char* key)
+     const
 {
     return (*this)[std::string(key)];
 }
 ValueType ConfigMap::operator [](std::string const & key)
+     const
 {
 
-        boost::mutex::scoped_lock lock(m_mutex);
+        boost::mutex::scoped_lock lock(const_cast<boost::mutex&>(m_mutex));
         ValueTypeMap::const_iterator i=m_map->find(key);
         if(i!=m_map->end())return i->second;
         throw std::runtime_error(std::string("key:")+key+" not found");
 }
 void ConfigMap::set(const char* key,ValueType const& v)
+     
 {
     boost::mutex::scoped_lock lock(m_mutex);
     m_map->erase(key);
     m_map->insert(std::make_pair(std::string(key),v));
 }
 size_t ConfigMap::size()
+     
 {
     boost::mutex::scoped_lock lock(m_mutex);
     return m_map->size();
 }
 ConfigMap::~ConfigMap()
+     
 {
 
 }

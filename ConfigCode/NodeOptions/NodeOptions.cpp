@@ -2,6 +2,7 @@
 #include "NodeOptions.hpp"
 
 bool NodeOptions::Parse(std::string const& ConfigName,int argc,char *argv[],boost::shared_ptr<ValueTypeMap> pVM)
+     
 {
 
         boost::program_options::options_description description("Node options");

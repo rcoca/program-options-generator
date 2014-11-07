@@ -32,35 +32,35 @@ public:
 
     typedef ValueTypeMap::const_iterator const_iterator;
 
-    ConfigMap () ;
+    ConfigMap ()   ;
 
-    ConfigMap (OptionsParser *Parser, const char *xConfigFile, int argc, char *argv[]) ;
+    ConfigMap (OptionsParser *Parser, const char *xConfigFile, int argc, char *argv[])   ;
 
-    bool ReloadConfig () ;
+    bool ReloadConfig ()   ;
 
-    bool ReloadConfig (std::string const &xConfigFile) ;
+    bool ReloadConfig (std::string const &xConfigFile)   ;
 
-    ConfigMap::iterator begin () ;
+    ConfigMap::iterator begin ()   ;
 
-    ConfigMap::iterator end () ;
+    ConfigMap::iterator end ()   ;
 
-    size_t erase (std::string const & key) ;
+    size_t erase (std::string const & key)   ;
 
-    boost::mutex & getLock () ;
+    boost::mutex & getLock ()   ;
 
-    std::pair<ValueTypeMap::iterator,bool> insert (std::pair<std::string,ValueType> val) ;
+    std::pair<ValueTypeMap::iterator,bool> insert (std::pair<std::string,ValueType> val)   ;
 
-    friend std::ostream & operator << (std::ostream& os, ConfigMap & cmap) ;
+    friend std::ostream & operator << (std::ostream& os, ConfigMap & cmap)   ;
 
-    ValueType operator [] (const char* key) ;
+    ValueType operator [] (const char* key) const  ;
 
-    ValueType operator [] (std::string const & key) ;
+    ValueType operator [] (std::string const & key) const  ;
 
-    void set (const char* key,ValueType const& v) ;
+    void set (const char* key,ValueType const& v)   ;
 
-    size_t size () ;
+    size_t size ()   ;
 
-    virtual  ~ConfigMap () ;
+    virtual  ~ConfigMap ()   ;
 };
 
 #endif /*#ifdef ConfigMap_hpp*/

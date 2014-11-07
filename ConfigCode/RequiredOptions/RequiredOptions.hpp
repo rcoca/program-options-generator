@@ -18,7 +18,7 @@
 struct RequiredOptions :public OptionsParser
 {
 public:
-    bool Parse (std::string const& ConfigName, int argc, char *argv[], boost::shared_ptr<ValueTypeMap> pVM) ;
+    bool Parse (std::string const& ConfigName, int argc, char *argv[], boost::shared_ptr<ValueTypeMap> pVM)   ;
 };
 
 #endif /*#ifdef RequiredOptions_hpp*/

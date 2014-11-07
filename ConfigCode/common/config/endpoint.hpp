@@ -12,9 +12,9 @@ public:
 
     unsigned short port;
 
-    endpoint () ;
+    endpoint ()   ;
 
-    endpoint (std::string const& host, unsigned short port_) ;
+    endpoint (std::string const& host, unsigned short port_)   ;
 };
 
 #endif /*#ifdef endpoint_hpp*/

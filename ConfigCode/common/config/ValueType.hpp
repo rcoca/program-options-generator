@@ -19,51 +19,51 @@ private:
     boost::variant<bool, double, endpoint, endpoint_list, int, path_list, std::string, url_list, url_string, vector_double > m_data;
 
 public:
-    ValueType () ;
+    ValueType ()   ;
 
-    ValueType (bool const & val_bool) ;
+    ValueType (bool const & val_bool)   ;
 
-    ValueType (double const & val_double) ;
+    ValueType (double const & val_double)   ;
 
-    ValueType (endpoint const & val_endpoint) ;
+    ValueType (endpoint const & val_endpoint)   ;
 
-    ValueType (endpoint_list const & val_endpoint_list) ;
+    ValueType (endpoint_list const & val_endpoint_list)   ;
 
-    ValueType (int const & val_int) ;
+    ValueType (int const & val_int)   ;
 
-    ValueType (path_list const & val_path_list) ;
+    ValueType (path_list const & val_path_list)   ;
 
-    ValueType (std::string const & val_string) ;
+    ValueType (std::string const & val_string)   ;
 
-    ValueType (url_list const & val_url_list) ;
+    ValueType (url_list const & val_url_list)   ;
 
-    ValueType (url_string const & val_url_string) ;
+    ValueType (url_string const & val_url_string)   ;
 
-    ValueType (vector_double const & val_vector_double) ;
+    ValueType (vector_double const & val_vector_double)   ;
 
-    bool get_bool () ;
+    bool get_bool ()   ;
 
-    double get_double () ;
+    double get_double ()   ;
 
-    endpoint get_endpoint () ;
+    endpoint get_endpoint ()   ;
 
-    endpoint_list get_endpoint_list () ;
+    endpoint_list get_endpoint_list ()   ;
 
-    int get_int () ;
+    int get_int ()   ;
 
-    path_list get_path_list () ;
+    path_list get_path_list ()   ;
 
-    std::string get_string () ;
+    std::string get_string ()   ;
 
-    url_list get_url_list () ;
+    url_list get_url_list ()   ;
 
-    url_string get_url_string () ;
+    url_string get_url_string ()   ;
 
-    vector_double get_vector_double () ;
+    vector_double get_vector_double ()   ;
 
-    friend std::ostream & operator << (std::ostream& os, const ValueType & T) ;
+    friend std::ostream & operator << (std::ostream& os, const ValueType & T)   ;
 
-    virtual  ~ValueType () ;
+    virtual  ~ValueType ()   ;
 };
 
 #endif /*#ifdef ValueType_hpp*/
