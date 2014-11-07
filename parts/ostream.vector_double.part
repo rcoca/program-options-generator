@@ -1,5 +1,5 @@
 
-    typename std::vector<double>::const_iterator i=v.values.begin();
+    std::vector<double>::const_iterator i=v.values.begin();
     os<<"[ ";
     for(;i!=v.values.end();++i)
         os<<*i<<(i+1==v.values.end()?" ]":", ");
