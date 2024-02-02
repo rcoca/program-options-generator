@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 # razvan.coca@gmail.com
 import os,glob,re
 import ast

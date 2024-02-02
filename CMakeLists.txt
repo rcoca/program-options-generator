@@ -1,4 +1,4 @@
-project(NodeConfGenerated)
+project(SimpleConfGenerated)
 cmake_minimum_required(VERSION 2.8)
 find_package( Boost REQUIRED COMPONENTS program_options regex system thread)
 find_package(Threads)

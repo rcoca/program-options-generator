@@ -1,8 +1,8 @@
-DataDir = /data/
+DataDir,d = /data/
 
-Generations=50.2,100.0 # optional
+Generations,g=50.2,100.0 # optional
 InitialTemperature=120.0 # optional
-PopulationSize=3500 # required
+PopulationSize,p=3500 # required
 # CrossoverOp=G1DListCrossoverTwoPointChunk # optional
 
 Nodes=192.168.1.3:4900, 192.168.1.4:4900

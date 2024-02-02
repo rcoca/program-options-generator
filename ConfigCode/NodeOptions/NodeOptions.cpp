@@ -17,7 +17,7 @@ bool NodeOptions::Parse(std::string const& ConfigName,int argc,char *argv[],boos
         description.add_options()
         ("help", "help message")
         ("debug","debug run")
-        ("Main.DataDir",boost::program_options::value< std::string >(&Main_DataDir) ->required(),"Main DataDir: string (ex:/data/)")
+        ("Main.DataDir,d",boost::program_options::value< std::string >(&Main_DataDir) ->required(),"Main DataDir,d: string (ex:/data/)")
         ("GeneticParameters.Generations,g",boost::program_options::value< vector_double >(&GeneticParameters_Generations) ->multitoken(),"GeneticParameters Generations,g: floats (ex:50.2,100.0 )")
         ("GeneticParameters.InitialTemperature,T",boost::program_options::value< double >(&GeneticParameters_InitialTemperature) ,"GeneticParameters InitialTemperature,T: float (ex:120.0 )")
         ("GeneticParameters.PopulationSize,P",boost::program_options::value< int >(&GeneticParameters_PopulationSize) ->required(),"GeneticParameters PopulationSize,P: int (ex:3500 )")
