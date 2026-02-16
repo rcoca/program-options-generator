@@ -18,6 +18,7 @@ class OptionsParser
 {
 public:
     virtual bool Parse (std::string const& ConfigName, int argc, char *argv[], boost::shared_ptr<ValueTypeMap> pVM)       = 0;
+    virtual ~OptionsParser() = default;
 };
 
 #endif /*#ifdef OptionsParser_hpp*/
